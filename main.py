@@ -1,20 +1,14 @@
 # http://amyboyle.ninja/Pyqtgraph-live-spectrogram
+import queue
+import sys
+import time
+
 import numpy as np
 import pyqtgraph as pg
-from PyQt5 import QtCore, QtGui
-
-FS = 44100  # Hz
-
-CHUNKSZ = 1024  # samples
-
-
-class MicrophoneRecorder():
-    def __init__(self, signal):
-        self.signal = signal
-
-    def read(self):
-        data = np.random.normal(size=CHUNKSZ)
-        self.signal.emit(data)
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QApplication
+from skimage.exposure import exposure
+from fft_reader import FFTReader
 
 
 class SpectrogramWidget(pg.PlotWidget):
@@ -26,7 +20,7 @@ class SpectrogramWidget(pg.PlotWidget):
         self.img = pg.ImageItem()
         self.addItem(self.img)
 
-        self.img_array = np.zeros((1000, CHUNKSZ // 2 + 1))
+        self.img_array = np.random.normal(size=(1000,512))
 
         # bipolar colormap
 
@@ -37,51 +31,52 @@ class SpectrogramWidget(pg.PlotWidget):
         lut = cmap.getLookupTable(0.0, 1.0, 256)
 
         self.img.setLookupTable(lut)
-        self.img.setLevels([-50, 40])
+        # self.img.setLevels([-50, 40])
 
-        freq = np.arange((CHUNKSZ / 2) + 1) / (float(CHUNKSZ) / FS)
-        yscale = 1.0 / (self.img_array.shape[1] / freq[-1])
-        self.img.scale((1. / FS) * CHUNKSZ, yscale)
+        # freq = np.arange((CHUNKSZ / 2) + 1) / (float(CHUNKSZ) / FS)
+        # yscale = 1.0 / (self.img_array.shape[1] / freq[-1])
+        # self.img.scale((1. / FS) * CHUNKSZ, yscale)
 
         self.setLabel('left', 'Frequency', units='Hz')
 
-        self.win = np.hanning(CHUNKSZ)
+        # self.win = np.hanning(CHUNKSZ)
         self.show()
 
-    def update(self, chunk):
-        # normalized, windowed frequencies in data chunk
-
-        spec = np.fft.rfft(chunk * self.win) / CHUNKSZ
-        # get magnitude
-
-        psd = abs(spec)
-        # convert to dB scale
-
-        psd = 20 * np.log10(psd)
-
+    def update(self, fft):
         # roll down one and replace leading edge with new data
-
         self.img_array = np.roll(self.img_array, -1, 0)
-        self.img_array[-1:] = psd
+        self.img_array[-1:] = fft
 
-        self.img.setImage(self.img_array, autoLevels=False)
-        self.img.
+        p2, p98 = np.percentile(self.img_array.T, (2, 98))
+        ret = exposure.rescale_intensity(self.img_array.T, in_range=(p2, p98))
+
+        self.img.setImage(ret.T, autoLevels=True)
+
+    def main(self):
+        while True:
+        # print('LOL')
+            try:
+                fft = FFTReader.output_queue.get(timeout=1)
+                # fft = np.random.normal(size=512)
+                # self.update(fft)
+            except queue.Empty:
+                print("[INFO] IQ queue is empty!", file=sys.stderr)
+                # continue
 
 
 if __name__ == '__main__':
-    app = QtGui.QApplication([])
+    app = QApplication(sys.argv)
 
+    fft_reader = FFTReader()
+    fft_reader.start()
 
     w = SpectrogramWidget()
-    w.read_collected.connect(w.update)
-
-    mic = MicrophoneRecorder(w.read_collected)
+    w.main()
 
     # time (seconds) between reads
 
-    interval = FS / CHUNKSZ
-    t = QtCore.QTimer()
-    t.timeout.connect(mic.read)
-    t.start(1000 / interval)  # QTimer takes ms
+    # t = QtCore.QTimer()
+    # t.timeout.connect(w.main)
+    # t.start(0.000000000001)  # QTimer takes ms
 
     app.exec_()
