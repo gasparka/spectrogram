@@ -1,8 +1,11 @@
 # http://amyboyle.ninja/Pyqtgraph-live-spectrogram
+import atexit
 import multiprocessing
 import queue
+import signal
 import sys
 import time
+from ctypes import c_bool
 from multiprocessing import Queue
 
 import numpy as np
@@ -25,19 +28,25 @@ class ImageMaker(multiprocessing.Process):
 
     def __init__(self):
         multiprocessing.Process.__init__(self)
+        self.alive = multiprocessing.Value(c_bool, True, lock=False)
         self.img_array = np.zeros(shape=(PACKETS, 512))
 
     def run(self):
-        while True:
+        while self.alive.value:
             try:
-                fft = FFTReader.output_queue.get(timeout=1)
+                fft = FFTReader.output_queue.get(timeout=10)
                 self.img_array = np.vstack([self.img_array[PACKETS_PER:], fft])
                 # p2, p98 = np.percentile(self.img_array, (2, 98))
                 # ret = exposure.rescale_intensity(self.img_array, in_range=(p2, p98))
                 ret = self.img_array / self.img_array.max()
                 ImageMaker.output_queue.put(ret)
-            except queue.Empty:
-                print("[INFO] IQ queue is empty!", file=sys.stderr)
+            except KeyboardInterrupt:
+                pass
+
+        while not ImageMaker.output_queue.empty():
+            ImageMaker.output_queue.get()
+
+        print('ImageMaker died!')
 
 
 class SpectrogramWidget(pg.PlotWidget):
@@ -65,24 +74,19 @@ class SpectrogramWidget(pg.PlotWidget):
         self.last_call = time.time()
         self.show()
 
-
     def main(self):
-        # while True:
-        # print('LOL')
-        # ss = time.time()
-        try:
-            image = ImageMaker.output_queue.get(timeout=1)
-            self.img.setImage(image, autoLevels=False)
-        except queue.Empty:
-            print("[INFO] IQ queue is empty!", file=sys.stderr)
+
+        image = ImageMaker.output_queue.get(timeout=10)
+        self.img.setImage(image, autoLevels=False)
             # continue
         ee = time.time()
-        print(f'{1 / (ee-self.last_call)} fps')
+        # print(f'{1 / (ee-self.last_call)} fps')
 
         self.last_call = time.time()
 
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal.SIG_DFL) # ctrl-c can kill QT event loop!
     app = QApplication(sys.argv)
 
     fft_reader = FFTReader(PACKETS_PER)
@@ -92,12 +96,14 @@ if __name__ == '__main__':
     image_maker.start()
 
     w = SpectrogramWidget()
-    # w.main()
-
-    # time (seconds) between reads
 
     t = QtCore.QTimer()
     t.timeout.connect(w.main)
     t.start(0)
 
     app.exec_()
+    fft_reader.alive.value = False
+    fft_reader.join()
+
+    image_maker.alive.value = False
+    fft_reader.join()

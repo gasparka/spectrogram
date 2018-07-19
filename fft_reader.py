@@ -1,4 +1,5 @@
 import multiprocessing
+from ctypes import c_bool
 from multiprocessing import Queue
 
 import numpy as np
@@ -14,6 +15,7 @@ class FFTReader(multiprocessing.Process):
     def __init__(self, packet_size):
         multiprocessing.Process.__init__(self)
 
+        self.alive = multiprocessing.Value(c_bool, True, lock=False)
         self.packet_size = packet_size
         self.fs = 40e6
         self.fc = 2420e6
@@ -69,8 +71,15 @@ class FFTReader(multiprocessing.Process):
         return ret
 
     def run(self):
-        self.init_devices()
-        while True:
-            fft_pack = self.get_fft()
-            FFTReader.output_queue.put(fft_pack)
-            # print(len(FFTReader.output_queue))
+        try:
+            self.init_devices()
+            while self.alive.value:
+                fft_pack = self.get_fft()
+                FFTReader.output_queue.put(fft_pack)
+        except KeyboardInterrupt:
+            pass
+
+        while not FFTReader.output_queue.empty():
+            FFTReader.output_queue.get()
+
+        print('FFTReader died!')
