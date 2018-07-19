@@ -17,8 +17,8 @@ class FFTReader(multiprocessing.Process):
 
         self.alive = multiprocessing.Value(c_bool, True, lock=False)
         self.packet_size = packet_size
-        self.fs = 40e6
-        self.fc = 2420e6
+        self.fs = 80e6
+        self.fc = 2440e6
         self.bandwidth = self.fs
 
         # self.fft_size = 512
@@ -28,7 +28,7 @@ class FFTReader(multiprocessing.Process):
         self.rx_buff = np.empty(shape=(self.packet_size, self.fft_size), dtype=np.int32)
 
     def init_devices(self):
-        args = dict(driver='lime', cacheCalibrations='1')
+        args = dict(driver='lime', cacheCalibrations='0')
         self.sdr_device = SoapySDR.Device(args)
 
         if self.sdr_device is None:
@@ -38,7 +38,7 @@ class FFTReader(multiprocessing.Process):
         self.sdr_device.setAntenna(SOAPY_SDR_RX, 0, 'LNAH')
         self.sdr_device.setFrequency(SOAPY_SDR_RX, 0, self.fc)
         self.sdr_device.setSampleRate(SOAPY_SDR_RX, 0, self.fs)
-        self.sdr_device.setBandwidth(SOAPY_SDR_RX, 0, self.bandwidth+20e6)
+        self.sdr_device.setBandwidth(SOAPY_SDR_RX, 0, self.bandwidth)
 
         self.sdr_device.setDCOffsetMode(SOAPY_SDR_RX, 0, True)
 
@@ -58,15 +58,10 @@ class FFTReader(multiprocessing.Process):
                 elif sr.ret == -2:
                     raise Exception('Soapy Error -2, this can be recoverable')
 
-        # throw away safety region
-        # ret = self.rx_buff[self.throwaway_packets:]
-        ret = self.rx_buff
         # throw away pack_start bit (LSB)
-        ret = ret >> 1
+        ret = self.rx_buff >> 1
         # convert to floats and rescale
         ret = ret.astype(float) * 2e-36
-        # convert to spectrogram format
-        # ret = ret.T
 
         return ret
 

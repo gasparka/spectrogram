@@ -50,8 +50,6 @@ class ImageMaker(multiprocessing.Process):
 
 
 class SpectrogramWidget(pg.PlotWidget):
-    read_collected = QtCore.pyqtSignal(np.ndarray)
-
     def __init__(self):
         super(SpectrogramWidget, self).__init__()
 
@@ -74,15 +72,19 @@ class SpectrogramWidget(pg.PlotWidget):
         self.last_call = time.time()
         self.show()
 
+        self.img_array = np.zeros(shape=(PACKETS, 512))
+
+    # @profile
     def main(self):
+        while not FFTReader.output_queue.empty():
+            fft = FFTReader.output_queue.get()
+            self.img_array = np.vstack([self.img_array[PACKETS_PER:], fft])
 
-        image = ImageMaker.output_queue.get(timeout=10)
-        self.img.setImage(image, autoLevels=False)
-            # continue
-        ee = time.time()
-        # print(f'{1 / (ee-self.last_call)} fps')
+        p2, p98 = np.percentile(self.img_array, (2, 98))
+        ret = exposure.rescale_intensity(self.img_array, in_range=(p2, p98))
 
-        self.last_call = time.time()
+        self.img.setImage(ret, autoLevels=False)
+
 
 
 if __name__ == '__main__':
@@ -92,8 +94,8 @@ if __name__ == '__main__':
     fft_reader = FFTReader(PACKETS_PER)
     fft_reader.start()
 
-    image_maker = ImageMaker()
-    image_maker.start()
+    # image_maker = ImageMaker()
+    # image_maker.start()
 
     w = SpectrogramWidget()
 
@@ -105,5 +107,5 @@ if __name__ == '__main__':
     fft_reader.alive.value = False
     fft_reader.join()
 
-    image_maker.alive.value = False
-    fft_reader.join()
+    # image_maker.alive.value = False
+    # fft_reader.join()
