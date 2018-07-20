@@ -1,12 +1,10 @@
 import signal
 import sys
 import time
-
 import numpy as np
 import pyqtgraph as pg
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication
-from skimage.exposure import exposure
 from fft_reader import FFTReader
 import matplotlib.pyplot as plt
 from util import cmapToColormap, rescale_intensity

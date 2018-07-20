@@ -14,7 +14,7 @@ RUN git clone --progress --verbose --recurse-submodules https://github.com/gaspa
 # INSTALL SOAPY
 RUN apt-get install -y cmake g++ libpython3-dev swig python3-distutils
 WORKDIR /SoapySDR/build
-RUN cmake ..
+RUN cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 RUN make install -j8
 RUN ldconfig
 
@@ -29,13 +29,10 @@ RUN sh install.sh
 
 # DEPENDS
 WORKDIR /realtime_spectrogram
-RUN apt-get install -y python3-pip
-RUN apt-get install -y qtbase5-dev python3-pyqt5 python3-numpy # needed for pyqtgraph
 ENV DEBIAN_FRONTEND noninteractive # disable bullshit prompts
 ENV DEBCONF_NONINTERACTIVE_SEEN true # disable bullshit prompts
-RUN apt-get install -y python3-tk # needed by matplotlib
+RUN apt-get install -y  python3-pip qtbase5-dev python3-pyqt5 python3-numpy python3-matplotlib python3-tk
 RUN pip3 install pyqtgraph
-
 
 #CMD ["python3", "main.py"]
 
