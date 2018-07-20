@@ -30,11 +30,11 @@ RUN sh install.sh
 # DEPENDS
 WORKDIR /realtime_spectrogram
 RUN apt-get install -y python3-pip
-RUN apt-get install -y qtbase5-dev python3-pyqt5 # needed for pyqtgraph
+RUN apt-get install -y qtbase5-dev python3-pyqt5 python3-numpy # needed for pyqtgraph
 ENV DEBIAN_FRONTEND noninteractive # disable bullshit prompts
 ENV DEBCONF_NONINTERACTIVE_SEEN true # disable bullshit prompts
 RUN apt-get install -y python3-tk # needed by matplotlib
-#RUN pip3 install -r requirements.txt
+RUN pip3 install pyqtgraph
 
 
 #CMD ["python3", "main.py"]

@@ -1,10 +1,6 @@
-# http://amyboyle.ninja/Pyqtgraph-live-spectrogram
-import multiprocessing
 import signal
 import sys
 import time
-from ctypes import c_bool
-from multiprocessing import Queue
 
 import numpy as np
 import pyqtgraph as pg
@@ -13,7 +9,7 @@ from PyQt5.QtWidgets import QApplication
 from skimage.exposure import exposure
 from fft_reader import FFTReader
 import matplotlib.pyplot as plt
-from util import cmapToColormap
+from util import cmapToColormap, rescale_intensity
 
 PACKETS = 2000
 PACKETS_PER = PACKETS // 20
@@ -55,7 +51,7 @@ class SpectrogramWidget(pg.PlotWidget):
             self.img_array = np.vstack([self.img_array[PACKETS_PER:], fft])
 
         p2, p98 = np.percentile(self.img_array, (2, 98))
-        ret = exposure.rescale_intensity(self.img_array, in_range=(p2, p98))
+        ret = rescale_intensity(self.img_array, in_range=(p2, p98))
 
         self.img.setImage(ret, autoLevels=False)
 

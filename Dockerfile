@@ -29,7 +29,7 @@ RUN sh install.sh
 # DEPENDS
 WORKDIR /realtime_spectrogram
 RUN apt-get install -y python3-pip
-RUN apt-get install -y qtbase5-dev python3-pyqt5  # needed for pyqtgraph
+RUN apt-get install -y qtbase5-dev python3-pyqt5 python3-numpy cython3 python3-matplotlib python3-scipy
 ENV DEBIAN_FRONTEND noninteractive # disable bullshit prompts
 ENV DEBCONF_NONINTERACTIVE_SEEN true # disable bullshit prompts
 RUN apt-get install -y python3-tk # needed by matplotlib
