@@ -21,5 +21,21 @@ RUN apt-get install -y git g++ cmake libsqlite3-dev libsoapysdr-dev libi2c-dev l
 WORKDIR /realtime_spectrogram/LimeSuite/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 RUN make install -j8
-WORKDIR /realtime_spectrogram/LimeSuite/udev_rules
+WORKDIR /realtime_spectrogram/LimeSuite/udev-rules
 RUN sh install.sh
+
+
+# DEPENDS
+WORKDIR /realtime_spectrogram
+RUN apt-get install -y python3-pip
+RUN apt-get install -y qtbase5-dev # needed for pyqtgraph
+
+
+ENV DEBIAN_FRONTEND noninteractive # disable bullshit prompts
+ENV DEBCONF_NONINTERACTIVE_SEEN true # disable bullshit prompts
+RUN apt-get install -y python3-tk # needed by matplotlib
+RUN pip3 install -r requirements.txt
+
+
+CMD ["python3", "main.py"]
+

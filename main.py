@@ -1,7 +1,5 @@
 # http://amyboyle.ninja/Pyqtgraph-live-spectrogram
-import atexit
 import multiprocessing
-import queue
 import signal
 import sys
 import time
@@ -14,9 +12,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication
 from skimage.exposure import exposure
 from fft_reader import FFTReader
-
 import matplotlib.pyplot as plt
-
 from util import cmapToColormap
 
 PACKETS = 2000

@@ -1,0 +1,3 @@
+pyqtgraph
+pyqt5
+scikit-image
