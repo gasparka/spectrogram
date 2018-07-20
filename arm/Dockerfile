@@ -3,7 +3,7 @@ FROM arm32v7/ubuntu:18.04
 COPY ./qemu-arm-static /usr/bin/qemu-arm-static
 
 # INSTALL BASIC STUFF
-RUN apt-get update && apt-get install -y git build-essential software-properties-common
+RUN apt-get update && apt-get install -y git build-essential software-properties-common nano
 
 
 # CLONES
