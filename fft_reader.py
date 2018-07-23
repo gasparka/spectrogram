@@ -1,6 +1,7 @@
 import logging
 import multiprocessing
 from collections import deque
+from ctypes import c_bool
 from multiprocessing import Queue
 
 import numpy as np
@@ -18,6 +19,8 @@ class FFTReader(multiprocessing.Process):
 
     def __init__(self, packet_size):
         multiprocessing.Process.__init__(self)
+
+        self.alive = multiprocessing.Value(c_bool, True, lock=False)
         self.packet_size = packet_size
         self.fs = 80e6
         self.fc = 2440e6
