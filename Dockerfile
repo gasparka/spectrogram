@@ -3,7 +3,6 @@ FROM ubuntu:18.04
 # INSTALL REQUIREMENTS
 RUN apt-get update && apt-get install -y git build-essential nano cmake g++ libi2c-dev libusb-1.0-0-dev avahi-daemon libavahi-client-dev
 
-
 # CLONES
 RUN git clone --progress --verbose  https://github.com/pothosware/SoapyRemote.git
 RUN git clone --progress --verbose  https://github.com/pothosware/SoapySDR.git

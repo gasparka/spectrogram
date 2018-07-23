@@ -2,38 +2,34 @@ FROM arm32v7/ubuntu:18.04
 
 COPY ./qemu-arm-static /usr/bin/qemu-arm-static
 
-# INSTALL BASIC STUFF
-RUN apt-get update && apt-get install -y git build-essential software-properties-common nano
-
+# INSTALL REQUIREMENTS
+RUN apt-get update && apt-get install -y git build-essential nano cmake g++ libi2c-dev libusb-1.0-0-dev avahi-daemon libavahi-client-dev
 
 # CLONES
+RUN git clone --progress --verbose  https://github.com/pothosware/SoapyRemote.git
 RUN git clone --progress --verbose  https://github.com/pothosware/SoapySDR.git
 RUN git clone --progress --verbose --recurse-submodules https://github.com/gasparka/realtime_spectrogram
 
-
 # INSTALL SOAPY
-RUN apt-get install -y cmake g++ libpython3-dev swig python3-distutils
 WORKDIR /SoapySDR/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 RUN make install -j8
 RUN ldconfig
 
+# INSTALL SOAPY-REMOTE
+WORKDIR /SoapyRemote/build
+RUN cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+RUN make install -j8
+RUN ldconfig
 
-# BUILD LIMESUITE
-RUN apt-get install -y git g++ cmake libsqlite3-dev libi2c-dev libusb-1.0-0-dev
+# INSTALL LIMESUITE
 WORKDIR /realtime_spectrogram/LimeSuite/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
+RUN cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 RUN make install -j8
 WORKDIR /realtime_spectrogram/LimeSuite/udev-rules
 RUN sh install.sh
 
-# DEPENDS
-WORKDIR /realtime_spectrogram
-ENV DEBIAN_FRONTEND noninteractive # disable bullshit prompts
-ENV DEBCONF_NONINTERACTIVE_SEEN true # disable bullshit prompts
-RUN apt-get install -y  python3-pip qtbase5-dev python3-pyqt5 python3-numpy python3-matplotlib python3-tk
-RUN pip3 install pyqtgraph
-
-#CMD ["python3", "main.py"]
+EXPOSE 80
+CMD /etc/init.d/dbus start; /etc/init.d/avahi-daemon start; SoapySDRServer --bind="0.0.0.0:80"
 
 
