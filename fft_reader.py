@@ -1,7 +1,6 @@
 import logging
 import multiprocessing
 from collections import deque
-from ctypes import c_bool
 from multiprocessing import Queue
 
 import numpy as np
@@ -19,15 +18,10 @@ class FFTReader(multiprocessing.Process):
 
     def __init__(self, packet_size):
         multiprocessing.Process.__init__(self)
-
-        self.alive = multiprocessing.Value(c_bool, True, lock=False)
         self.packet_size = packet_size
         self.fs = 80e6
         self.fc = 2440e6
         self.bandwidth = self.fs
-
-        # self.fft_size = 512
-        # self.rx_buff = np.empty(shape=self.fft_size, dtype=np.int32)
 
         self.fft_size = 512
         self.rx_buff = np.empty(shape=(self.packet_size, self.fft_size), dtype=np.int32)
@@ -36,7 +30,6 @@ class FFTReader(multiprocessing.Process):
         self.agc_enabled = True
         self.gain_level = 0
         self.max_power_history = deque(maxlen=256)
-
 
     def init_devices(self):
         self.sdr_device = SoapySDR.Device({'driver': 'remote'})
@@ -58,14 +51,18 @@ class FFTReader(multiprocessing.Process):
             self.sdr_device.setGainMode(SOAPY_SDR_RX, 0, False)
 
         # self.rx_stream = self.sdr_device.setupStream(SOAPY_SDR_RX, SOAPY_SDR_CS16)
+        # MTU is hardcoded to get 512 samples ie. one FFT frame.
         self.rx_stream = self.sdr_device.setupStream(SOAPY_SDR_RX, SOAPY_SDR_CS16, [0],
-                                           {'remote:mtu': '2120', 'remote:prot': 'tcp'})
+                                                     {'remote:mtu': '2120', 'remote:prot': 'tcp'})
 
         assert self.sdr_device.getStreamMTU(self.rx_stream) == self.fft_size
 
         self.sdr_device.activateStream(self.rx_stream)
 
     def automatic_gain_control(self, ffts):
+        if not self.agc_enabled:
+            return
+
         def get_max_power():
             try:
                 return np.max(list(self.max_power_history))
@@ -110,7 +107,7 @@ class FFTReader(multiprocessing.Process):
         for i in range(self.packet_size):
             sr = self.sdr_device.readStream(self.rx_stream, [self.rx_buff[i]], self.fft_size)
             if sr.ret != self.fft_size:
-                print('SHIT!!!')
+                log.error('Bad samples from remote!')
 
         # throw away pack_start bit (LSB)
         ret = self.rx_buff >> 1
@@ -132,4 +129,4 @@ class FFTReader(multiprocessing.Process):
         while not FFTReader.output_queue.empty():
             FFTReader.output_queue.get()
 
-        print('FFTReader died!')
+        log.warning('FFTReader died!')
