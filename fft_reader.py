@@ -39,8 +39,8 @@ class FFTReader(multiprocessing.Process):
 
 
     def init_devices(self):
-        args = dict(driver='remote')
-        self.sdr_device = SoapySDR.Device(args)
+        self.sdr_device = SoapySDR.Device({'driver': 'remote'})
+        # self.sdr_device = SoapySDR.Device({'driver': 'lime'})
 
         if self.sdr_device is None:
             print("[ERROR] No SDR device!", file=sys.stderr)
@@ -57,7 +57,12 @@ class FFTReader(multiprocessing.Process):
         if self.sdr_device.hasGainMode(SOAPY_SDR_RX, 0):
             self.sdr_device.setGainMode(SOAPY_SDR_RX, 0, False)
 
-        self.rx_stream = self.sdr_device.setupStream(SOAPY_SDR_RX, SOAPY_SDR_CS16)
+        # self.rx_stream = self.sdr_device.setupStream(SOAPY_SDR_RX, SOAPY_SDR_CS16)
+        self.rx_stream = self.sdr_device.setupStream(SOAPY_SDR_RX, SOAPY_SDR_CS16, [0],
+                                           {'remote:mtu': '2120', 'remote:prot': 'tcp'})
+
+        assert self.sdr_device.getStreamMTU(self.rx_stream) == self.fft_size
+
         self.sdr_device.activateStream(self.rx_stream)
 
     def automatic_gain_control(self, ffts):
@@ -103,12 +108,9 @@ class FFTReader(multiprocessing.Process):
     def get_fft(self):
 
         for i in range(self.packet_size):
-            while True:
-                sr = self.sdr_device.readStream(self.rx_stream, [self.rx_buff[i]], self.fft_size)
-                if sr.ret == self.fft_size:
-                    break
-                elif sr.ret == -2:
-                    raise Exception('Soapy Error -2, this can be recoverable')
+            sr = self.sdr_device.readStream(self.rx_stream, [self.rx_buff[i]], self.fft_size)
+            if sr.ret != self.fft_size:
+                print('SHIT!!!')
 
         # throw away pack_start bit (LSB)
         ret = self.rx_buff >> 1
