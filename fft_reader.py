@@ -39,7 +39,7 @@ class FFTReader(multiprocessing.Process):
 
 
     def init_devices(self):
-        args = dict(driver='lime', cacheCalibrations='0')
+        args = dict(driver='remote')
         self.sdr_device = SoapySDR.Device(args)
 
         if self.sdr_device is None:
