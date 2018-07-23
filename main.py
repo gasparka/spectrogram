@@ -6,11 +6,12 @@ import pyqtgraph as pg
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication
 from fft_reader import FFTReader
-import matplotlib.pyplot as plt
-from util import cmapToColormap, rescale_intensity
+from util import rescale_intensity
+import pickle
 
 PACKETS = 2000
 PACKETS_PER = PACKETS // 20
+
 
 class SpectrogramWidget(pg.PlotWidget):
     def __init__(self):
@@ -19,10 +20,8 @@ class SpectrogramWidget(pg.PlotWidget):
         self.img = pg.ImageItem()
         self.addItem(self.img)
 
-        pos, rgba_colors = zip(*cmapToColormap(plt.get_cmap("viridis")))
-        # Set the colormap
-        pgColormap = pg.ColorMap(pos, rgba_colors)
-        lut = pgColormap.getLookupTable()
+        with open('viridis_lut.pickle', 'rb') as f:
+            lut = pickle.load(f)
         self.img.setLookupTable(lut)
         self.img.setLevels([0, 1])
 
@@ -54,9 +53,8 @@ class SpectrogramWidget(pg.PlotWidget):
         self.img.setImage(ret, autoLevels=False)
 
 
-
 if __name__ == '__main__':
-    signal.signal(signal.SIGINT, signal.SIG_DFL) # ctrl-c can kill QT event loop!
+    signal.signal(signal.SIGINT, signal.SIG_DFL)  # ctrl-c can kill QT event loop!
     app = QApplication(sys.argv)
 
     fft_reader = FFTReader(PACKETS_PER)
