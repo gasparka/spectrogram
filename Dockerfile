@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 # INSTALL REQUIREMENTS
-RUN apt-get update && apt-get install -y git build-essential software-properties-common nano cmake g++ libpython3-dev swig python3-distutils libsqlite3-dev libi2c-dev libusb-1.0-0-dev avahi-daemon libavahi-client-dev
+RUN apt-get update && apt-get install -y git build-essential nano cmake g++ libi2c-dev libusb-1.0-0-dev avahi-daemon libavahi-client-dev
 
 
 # CLONES
