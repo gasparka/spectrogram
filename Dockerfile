@@ -1,7 +1,8 @@
 FROM ubuntu:18.04
 
 # INSTALL REQUIREMENTS
-RUN apt-get update && apt-get install -y git build-essential nano cmake g++ libi2c-dev libusb-1.0-0-dev avahi-daemon libavahi-client-dev
+RUN apt-get update && apt-get install -y git build-essential nano cmake g++ libi2c-dev libusb-1.0-0-dev avahi-daemon libavahi-client-dev python3-pip qtbase5-dev python3-pyqt5 python3-numpy
+RUN pip3 install pyqtgraph --no-deps
 
 # CLONES
 RUN git clone --progress --verbose  https://github.com/pothosware/SoapyRemote.git
@@ -27,6 +28,7 @@ RUN make install -j8
 WORKDIR /realtime_spectrogram/LimeSuite/udev-rules
 RUN sh install.sh
 
-EXPOSE 80
-CMD /etc/init.d/dbus start; /etc/init.d/avahi-daemon start; SoapySDRServer --bind="0.0.0.0:80"
+# RUN APP
+WORKDIR /realtime_spectrogram
+CMD ["python3", "main.py"]
 
