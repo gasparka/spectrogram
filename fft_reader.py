@@ -22,6 +22,9 @@ class FFTReader(multiprocessing.Process):
 
         self.alive = multiprocessing.Value(c_bool, True, lock=False)
         self.packet_size = packet_size
+        # PITFALL ALERT:
+        # Sampling rate is known to work for 80e6 and 40e6. This restriction is due to the custom FPGA image.
+        # Root cause is the LMS7 RX sampling clock, whose phase depends on the sample rate (see https://github.com/myriadrf/LMS7002M-docs/issues/2)
         self.fs = 80e6
         self.fc = 2440e6
         self.bandwidth = self.fs
