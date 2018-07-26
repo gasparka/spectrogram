@@ -1,12 +1,21 @@
-# BUILD
 
-```bash
-docker build -t realtime_spectrogram --no-cache  .
-```
 
 # RUN
 
-```bash
-docker run -it --privileged --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" realtime_spectrogram:latest
-```
+1. Program the FPGA:
+
+    ```bash
+    docker run -it --privileged gasparka/realtime_spectrogram python3 main.py --fpga_init
+    ```
+    Note: You need to unplug and replug your LimeSDR-Mini!
+
+2. Run the application:
+    ```bash
+    docker run -it --privileged --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" realtime_spectrogram python3 main.py --run
+    ```
+    
+3. Once you are done, restore the FPGA:
+    ```bash
+    docker run -it --privileged gasparka/realtime_spectrogram python3 main.py --fpga_restore
+    ```
 
