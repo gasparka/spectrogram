@@ -2,3 +2,7 @@
 	path = LimeSuite
 	url = https://github.com/gasparka/LimeSuite
 	branch = fpga_fft
+[submodule "LimeSDR-Mini_GW"]
+	path = LimeSDR-Mini_GW
+	url = https://github.com/gasparka/LimeSDR-Mini_GW
+	branch = fft8k
