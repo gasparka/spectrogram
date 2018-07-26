@@ -1,5 +1,7 @@
+import argparse
 import logging
 import signal
+import subprocess
 import sys
 import time
 import numpy as np
@@ -85,4 +87,19 @@ def init():
 
 
 if __name__ == '__main__':
-    init()
+    parser = argparse.ArgumentParser(description='Description of your program')
+    parser.add_argument('--fpga_init', help='Description for foo argument', action='store_true')
+    parser.add_argument('--fpga_restore', help='Description for foo argument', action='store_true')
+    parser.add_argument('--run', help='Description for foo argument', action='store_true')
+    args = vars(parser.parse_args())
+
+    if args['fpga_init']:
+        log.info('Programming FPGA, takes ~20 sec...')
+        subprocess.run(
+            ["LimeUtil", "--fpga=./LimeSDR-Mini_GW/LimeSDR-Mini_bitstreams/LimeSDR-Mini_lms7_trx_HW_1.2_auto.rpd"])
+        log.info('Please unplug and replug the LimeSDR-Mini...')
+    elif args['fpga_restore']:
+        log.info('Restoring default LimeSuite FPGA image, takes ~20 sec...')
+        subprocess.run(["LimeUtil", "--update"])
+    elif args['run']:
+        init()
