@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger('main')
 
 SCREEN_FFTS = 2000
-SCREEN_FFTS_PACKETS = 20
+SCREEN_FFTS_PACKETS = 30
 PACKET_SIZE = SCREEN_FFTS // SCREEN_FFTS_PACKETS
 
 
@@ -102,4 +102,6 @@ if __name__ == '__main__':
         log.info('Restoring default LimeSuite FPGA image, takes ~20 sec...')
         subprocess.run(["LimeUtil", "--update"])
     elif args['run']:
+        init()
+    else:
         init()
