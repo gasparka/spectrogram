@@ -11,7 +11,7 @@
 
 2. Run the application:
     ```bash
-    docker run -it --privileged --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" realtime_spectrogram python3 main.py --run
+    docker run -it --privileged --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" gasparka/realtime_spectrogram python3 main.py --run
     ```
     
 3. Once you are done, restore the FPGA:
