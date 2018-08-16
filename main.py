@@ -45,23 +45,21 @@ class SpectrogramWidget(pg.PlotWidget):
 
     # @profile
     def main(self):
-
-        # wait for data
-        while FFTReader.output_queue.empty():
-            pass
-
         i = 0
-        while not FFTReader.output_queue.empty():
+        l = []
+        while FFTReader.output_queue.qsize() != 0:
             fft = FFTReader.output_queue.get()
-            self.img_array = np.vstack([self.img_array[PACKET_SIZE:], fft])
+            l.append(fft)
             i += 1
             if i >= SCREEN_FFTS_PACKETS:
                 # have already loaded full screen...
                 log.warning('Plotting is slower than FFT interface...throwing away excess buffer..')
-                while not FFTReader.output_queue.empty():
+                while FFTReader.output_queue.qsize() != 0:
                     FFTReader.output_queue.get()
                 break
 
+        self.img_array = np.vstack([self.img_array[PACKET_SIZE*i:]] + l)
+        print(i)
         p2, p98 = np.percentile(self.img_array, (2, 98))
         ret = rescale_intensity(self.img_array, in_range=(p2, p98))
 
