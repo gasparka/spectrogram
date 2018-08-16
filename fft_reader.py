@@ -35,7 +35,7 @@ class FFTReader(multiprocessing.Process):
         # AGC
         self.agc_enabled = True
         self.gain_level = 0
-        self.max_power_history = deque(maxlen=256)
+        self.max_power_history = deque(maxlen=512)
 
     def init_devices(self):
         self.sdr_device = SoapySDR.Device({'driver': 'lime'})
@@ -75,6 +75,7 @@ class FFTReader(multiprocessing.Process):
         self.max_power_history.append(max_fft_sum)
 
         max_power = get_max_power()
+        # TODO: should ignore the bins with DC? or not
         if len(self.max_power_history) == self.max_power_history.maxlen:
             # print(max_power)
             if max_power > 1e-27:
