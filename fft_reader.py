@@ -29,11 +29,13 @@ class FFTReader(multiprocessing.Process):
         self.fc = 2440e6
         self.bandwidth = self.fs
 
+        # todo: ideally these should be read from FPGA
         self.fft_size = 512
+        self.fixed_gain = 2**-43 # PITFALL ALERT: this needs to change if avgpooling settings or fft size changes!
         self.rx_buff = np.empty(shape=(self.packet_size, self.fft_size), dtype=np.int32)
 
         # AGC
-        self.agc_enabled = True
+        self.agc_enabled = False
         self.gain_level = 0
         self.max_power_history = deque(maxlen=512)
 
@@ -54,6 +56,10 @@ class FFTReader(multiprocessing.Process):
 
         if self.sdr_device.hasGainMode(SOAPY_SDR_RX, 0):
             self.sdr_device.setGainMode(SOAPY_SDR_RX, 0, False)
+
+        gains = {"LNA": 0, "TIA": 0, "PGA": -12}
+        for gain, value in gains.items():
+            self.sdr_device.setGain(SOAPY_SDR_RX, 0, gain, value)
 
         self.rx_stream = self.sdr_device.setupStream(SOAPY_SDR_RX, SOAPY_SDR_CS16)
         self.sdr_device.activateStream(self.rx_stream)
@@ -107,12 +113,12 @@ class FFTReader(multiprocessing.Process):
         for i in range(self.packet_size):
             sr = self.sdr_device.readStream(self.rx_stream, [self.rx_buff[i]], self.fft_size)
             if sr.ret != self.fft_size:
+                print(sr.ret)
                 log.error('Bad samples from remote!')
 
-        # throw away pack_start bit (LSB)
-        ret = self.rx_buff >> 1
+
         # convert to floats and rescale
-        ret = ret.astype(float) * 2e-36
+        ret = (self.rx_buff.astype(float) * 2**-41)
 
         return ret
 

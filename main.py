@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger('main')
 
 SCREEN_FFTS = 2000
-SCREEN_FFTS_PACKETS = 30
+SCREEN_FFTS_PACKETS = 200
 PACKET_SIZE = SCREEN_FFTS // SCREEN_FFTS_PACKETS
 
 
@@ -32,9 +32,6 @@ class SpectrogramWidget(pg.PlotWidget):
         self.img.setLookupTable(lut)
         self.img.setLevels([0, 1])
 
-        # freq = np.arange((CHUNKSZ / 2) + 1) / (float(CHUNKSZ) / FS)
-        # yscale = 1.0 / (self.img_array.shape[1] / freq[-1])
-        # self.img.scale((1. / FS) * CHUNKSZ, yscale)
 
         self.setLabel('left', 'Frequency', units='Hz')
 
