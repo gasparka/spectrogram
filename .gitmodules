@@ -5,4 +5,4 @@
 [submodule "LimeSDR-Mini_GW"]
 	path = LimeSDR-Mini_GW
 	url = https://github.com/gasparka/LimeSDR-Mini_GW
-	branch = fft8k
+	branch = fpga_fft
