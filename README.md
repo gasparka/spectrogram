@@ -1,7 +1,9 @@
 
+Spectrogram accelerator implemented in FPGA, shows 80M band at 2.4GHz center frequency.
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/diagram.bmp "Diagram")
 
-![alt text](https://github.com/gasparka/realtime_spectrogram/doc/wify.gif "Wify")
-![alt text](https://github.com/gasparka/realtime_spectrogram/doc/diagram.bmp "Wify")
+Turning on WiFi on my mobile:
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wify.gif "Wify")
 
 You will need a heat-sink on your LimeSDR-mini to run this!
 
