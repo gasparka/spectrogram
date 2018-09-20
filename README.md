@@ -1,5 +1,7 @@
 
-Spectrogram accelerator implemented in FPGA, shows 80M band at 2.4GHz center frequency.
+
+Spectrogram accelerator for LimeSDR-mini. Average-pooling reduces the noise of the spectrogram 
+and downsamples the output datarate. Potentially usable on ARM devices.
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/diagram.bmp "Diagram")
 
 Turning on WiFi on my mobile:
@@ -24,3 +26,10 @@ You will need a heat-sink on your LimeSDR-mini to run this!
     docker run -it --privileged gasparka/realtime_spectrogram python3 main.py --fpga_restore
     ```
 
+Heatsinking the LimeSDR-mini
+----------------------------
+
+Simple way of heatsinking your Lime by using the 'thermal pad' and a piece of metal.
+
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9411.JPG)
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9408.JPG)
