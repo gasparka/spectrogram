@@ -1,5 +1,6 @@
 FROM ubuntu:18.04
 
+
 # INSTALL REQUIREMENTS
 RUN apt-get update && apt-get install -y git build-essential nano cmake g++ libi2c-dev libusb-1.0-0-dev python3-pip qtbase5-dev python3-pyqt5 python3-numpy libpython3-dev swig
 RUN pip3 install pyqtgraph --no-deps

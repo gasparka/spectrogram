@@ -1,12 +1,11 @@
 FROM arm32v7/ubuntu:18.04
-
 COPY ./qemu-arm-static /usr/bin/qemu-arm-static
 
 # INSTALL REQUIREMENTS
-RUN apt-get update && apt-get install -y git build-essential nano cmake g++ libi2c-dev libusb-1.0-0-dev avahi-daemon libavahi-client-dev
+RUN apt-get update && apt-get install -y git build-essential nano cmake g++ libi2c-dev libusb-1.0-0-dev python3-pip qtbase5-dev python3-pyqt5 python3-numpy libpython3-dev swig
+RUN pip3 install pyqtgraph --no-deps
 
 # CLONES
-RUN git clone --progress --verbose  https://github.com/pothosware/SoapyRemote.git
 RUN git clone --progress --verbose  https://github.com/pothosware/SoapySDR.git
 RUN git clone --progress --verbose --recurse-submodules https://github.com/gasparka/realtime_spectrogram
 
@@ -14,13 +13,6 @@ RUN git clone --progress --verbose --recurse-submodules https://github.com/gaspa
 WORKDIR /SoapySDR/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 RUN make install -j8
-RUN ldconfig
-
-# INSTALL SOAPY-REMOTE
-WORKDIR /SoapyRemote/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr ..
-RUN make install -j8
-RUN ldconfig
 
 # INSTALL LIMESUITE
 WORKDIR /realtime_spectrogram/LimeSuite/build
@@ -29,7 +21,5 @@ RUN make install -j8
 WORKDIR /realtime_spectrogram/LimeSuite/udev-rules
 RUN sh install.sh
 
-EXPOSE 80
-CMD /etc/init.d/dbus start; /etc/init.d/avahi-daemon start; SoapySDRServer --bind="0.0.0.0:80"
-
-
+# RUN APP
+WORKDIR /realtime_spectrogram
