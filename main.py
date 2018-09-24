@@ -33,7 +33,7 @@ class SpectrogramWidget(pg.PlotWidget):
         self.img.setLevels([0, 1])
 
 
-        # set x-axis labels!
+        # set x-axis labels
         xax = self.getAxis('bottom')
         tick_i = range(0, SCREEN_FFTS, SCREEN_FFTS//16)
         time_unit = (1/80e6) * (1024*8*8)
@@ -42,7 +42,7 @@ class SpectrogramWidget(pg.PlotWidget):
         xax.setTicks(ticks)
         self.setLabel('bottom', 'Time')
 
-        # set y-axis labels!
+        # set y-axis labels
         xax = self.getAxis('left')
         vals = ['2.40', '2.41', '2.42', '2.43', '2.44', '2.45', '2.46', '2.47', '2.48']
         tick_i = np.linspace(0, 512, num=len(vals), endpoint=True)
@@ -70,8 +70,7 @@ class SpectrogramWidget(pg.PlotWidget):
                 break
 
         self.img_array = np.vstack([self.img_array[PACKET_SIZE*i:]] + l)
-        print(i)
-        p2, p98 = np.percentile(self.img_array, (2, 98))
+        p2, p98 = np.percentile(self.img_array, (1, 99.5))
         ret = rescale_intensity(self.img_array, in_range=(p2, p98))
 
         self.img.setImage(ret, autoLevels=False)
