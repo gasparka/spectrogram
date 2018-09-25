@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y git build-essential nano cmake g++ libi
 # CLONES
 RUN git clone --progress --verbose  https://github.com/pothosware/SoapyRemote.git
 RUN git clone --progress --verbose  https://github.com/pothosware/SoapySDR.git
-RUN git clone --progress --verbose --recurse-submodules https://github.com/gasparka/realtime_spectrogram
+RUN git clone -b fpga_fft --progress --verbose  https://github.com/gasparka/LimeSuite
 
 # INSTALL SOAPY
 WORKDIR /SoapySDR/build
@@ -20,11 +20,11 @@ RUN cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 RUN make install -j8
 RUN ldconfig
 
-# INSTALL LIMESUITE
-WORKDIR /realtime_spectrogram/LimeSuite/build
+# INSTALL CUSTOM LIMESUITE
+WORKDIR /LimeSuite/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 RUN make install -j8
-WORKDIR /realtime_spectrogram/LimeSuite/udev-rules
+WORKDIR /LimeSuite/udev-rules
 RUN sh install.sh
 
 EXPOSE 80

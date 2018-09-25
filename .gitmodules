@@ -1,4 +1,0 @@
-[submodule "LimeSuite"]
-	path = LimeSuite
-	url = https://github.com/gasparka/LimeSuite
-	branch = fpga_fft
