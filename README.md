@@ -10,3 +10,4 @@ docker build -t realtime_spectrogram --no-cache  .
 docker run -it --privileged --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" realtime_spectrogram:latest
 ```
 
+
