@@ -41,9 +41,8 @@ Found device 0
 See the NOTEBOOK on how to get the FFT frames from the server and plot them.
 
 Tested on:
-
 * ODROID-XU4
-* Rasberry Pi 3  TODO
+* Rasberry Pi 3
 
 # 2. Realtime GUI
 This is a Python GUI that plots the FFT frames from the remote diver in real-time.
