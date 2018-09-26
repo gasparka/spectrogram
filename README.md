@@ -1,13 +1,63 @@
-# BUILD
 
-```bash
-docker build -t realtime_spectrogram --no-cache  .
+This repository is divided into two parts.
+
+# 1. Remote driver - Running the remote driver on ARM devices
+Pair your LimeSDR-Mini with a cheap ARM board to turn it into a remote FFT server.
+
+Install Docker:
+
+`curl -fsSL https://get.docker.com | sh`
+
+For the first time, you need to write the FPGA image to the flash:
+`docker run -it --privileged --net=host soapy_fft LimeUtil --fpga=LimeSDR-Mini_GW/LimeSDR-Mini_bitstreams/LimeSDR-Mini_lms7_trx_HW_1.2_auto.rpd`
+
+You can always restore the default image with running:
+`docker run -it --privileged --net=host soapy_fft LimeUtil --update`
+
+Setup the device as an SoapySDR-Remote server:
+
+`sudo docker run -it --privileged --net=host gasparka/soapy_fft_arm`
+
+Test that the server works by running on client machine:
+
+```
+~> SoapySDRUtil --find="driver=remote"
+######################################################
+## Soapy SDR -- the SDR abstraction library
+######################################################
+
+Found device 0
+  addr = 24607:1027
+  driver = remote
+  label = LimeSDR Mini [USB 3.0] 1D40EC49F23932
+  media = USB 3.0
+  module = FT601
+  name = LimeSDR Mini
+  remote = tcp://192.168.1.136:55132
+  remote:driver = lime
+  serial = 1D40EC49F23932
 ```
 
-# RUN
+See the NOTEBOOK on how to get the FFT frames from the server and plot them.
 
-```bash
-docker run -it --privileged --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" realtime_spectrogram:latest
-```
+Tested on:
+
+* ODROID-XU4
+* Rasberry Pi 3  TODO
+
+# 2. Realtime GUI
+This is a Python GUI that plots the FFT frames from the remote diver in real-time.
+Here is a demo:
+
+Idea is to put most screen space for time_axsis, so you can see even short time events. For
+example the Bluetooth transmissions:
+
+To use it you must have a Remote Driver working somewhere and then easiest is to
+use the dockerized version like this:
+
+`docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" spectrogram_gui`
+
+
+
 
 
