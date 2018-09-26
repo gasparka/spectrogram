@@ -1,9 +1,7 @@
 import logging
 import multiprocessing
-from collections import deque
 from ctypes import c_bool
 from multiprocessing import Queue
-
 import numpy as np
 import SoapySDR
 from SoapySDR import *  # SOAPY_SDR_ constants
@@ -34,13 +32,9 @@ class FFTReader(multiprocessing.Process):
         self.fixed_gain = 2**-43 # PITFALL ALERT: this needs to change if avgpooling settings or fft size changes!
         self.rx_buff = np.empty(shape=(self.packet_size, self.fft_size), dtype=np.int32)
 
-        # AGC
-        self.agc_enabled = False
-        self.gain_level = 0
-        self.max_power_history = deque(maxlen=512)
-
     def init_devices(self):
-        self.sdr_device = SoapySDR.Device({'driver': 'lime'})
+        self.sdr_device = SoapySDR.Device({'driver': 'remote'})
+        # self.sdr_device = SoapySDR.Device({'driver': 'lime'})
 
         if self.sdr_device is None:
             print("[ERROR] No SDR device!", file=sys.stderr)
@@ -61,65 +55,24 @@ class FFTReader(multiprocessing.Process):
         for gain, value in gains.items():
             self.sdr_device.setGain(SOAPY_SDR_RX, 0, gain, value)
 
-        self.rx_stream = self.sdr_device.setupStream(SOAPY_SDR_RX, SOAPY_SDR_CS16)
+        # MTU is hardcoded to get 512 samples i.e. one FFT frame.
+        self.rx_stream = self.sdr_device.setupStream(SOAPY_SDR_RX, SOAPY_SDR_CS16, [0],
+                                                     {'remote:mtu': '2120', 'remote:prot': 'tcp'})
+
+        assert self.sdr_device.getStreamMTU(self.rx_stream) == self.fft_size
+
         self.sdr_device.activateStream(self.rx_stream)
-
-    def automatic_gain_control(self, ffts):
-        if not self.agc_enabled:
-            return
-
-        def get_max_power():
-            try:
-                return np.max(list(self.max_power_history))
-            except ValueError:  # empty list?
-                return 0.0
-
-        old_gain = self.gain_level
-
-        # take maximum IQ float value
-        max_fft_sum = np.max(np.sum(ffts, axis=0))
-        self.max_power_history.append(max_fft_sum)
-
-        max_power = get_max_power()
-        # TODO: should ignore the bins with DC? or not
-        if len(self.max_power_history) == self.max_power_history.maxlen:
-            # print(max_power)
-            if max_power > 1e-27:
-                self.gain_level -= 6
-                self.max_power_history.clear()
-            elif max_power < 1e-29:
-                self.gain_level += 6
-                self.max_power_history.clear()
-
-            if self.gain_level > 60:
-                self.gain_level = 60
-            elif self.gain_level < 0:
-                self.gain_level = 0
-
-            if old_gain != self.gain_level:
-                log.info(f'Gain {old_gain} -> {self.gain_level}, max_pow: {max_power}')
-
-                if self.gain_level <= 30:
-                    gains = {"LNA": self.gain_level, "TIA": 0, "PGA": -12}
-                else:
-                    gains = {"LNA": 30, "TIA": 0, "PGA": self.gain_level - 30 - 12}
-
-                # set gains
-                for gain, value in gains.items():
-                    self.sdr_device.setGain(SOAPY_SDR_RX, 0, gain, value)
 
     def get_fft(self):
 
         for i in range(self.packet_size):
             sr = self.sdr_device.readStream(self.rx_stream, [self.rx_buff[i]], self.fft_size)
             if sr.ret != self.fft_size:
-                print(sr.ret)
                 log.error('Bad samples from remote!')
 
-
-        # convert to floats and rescale
-        ret = (self.rx_buff.astype(float) * 2**-41)
-
+        # convert the fixed point format to floats and decibels
+        # TODO: Decibel stuff could be inside FPGA..
+        ret = np.log10(self.rx_buff.astype(float) * self.fixed_gain) * 10
         return ret
 
     def run(self):
@@ -127,7 +80,6 @@ class FFTReader(multiprocessing.Process):
             self.init_devices()
             while self.alive.value:
                 fft_pack = self.get_fft()
-                self.automatic_gain_control(fft_pack)
                 FFTReader.output_queue.put(fft_pack)
         except KeyboardInterrupt:
             pass
