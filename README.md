@@ -21,7 +21,7 @@ You can always restore the default image by running:
 
 `docker run -it --privileged --net=host gasparka/spectrogram_driver:arm LimeUtil --update`
 
-Note that you need to power-cycle the Lime after the FPGA programming, this is a LimeSuite bug `#216 <https://github.com/myriadrf/LimeSuite/issues/216>`_ 
+Note that you need to power-cycle the Lime after the FPGA programming, this is a LimeSuite bug [#216](https://github.com/myriadrf/LimeSuite/issues/216)
 
 Next, start the SoapySDR-Remote server:
 
@@ -47,7 +47,7 @@ Found device 0
   serial = 1D40EC49F23932
 ```
 
-See the `Demo Notebook <https://github.com/gasparka/realtime_spectrogram/blob/master/driver/usage_demo.ipynb>`_
+See the [Demo Notebook](https://github.com/gasparka/realtime_spectrogram/blob/master/driver/usage_demo.ipynb)
  on how to access the server, control the SDR and plot the spectrogram.
 
 Tested on:
@@ -61,10 +61,11 @@ This is a Python GUI that plots the FFT frames from the remote diver in real-tim
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wifi.gif "Wifi")
 
 Or turning on Bluetooth:
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/Bluetooth.gif "Bluetooth")
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/blue.gif "Bluetooth")
 
 
 Run (add ':arm' to run on ARM devices-slow!):
+
 `docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" gasparka/spectrogram_gui`
 
 Tip: Use 'Space' to pause the stream.
@@ -73,7 +74,7 @@ Tip: Use 'Space' to pause the stream.
 
 
 Accelerator is implemented in 18-bit fixed-point format, thus it might be interesting
-to compare the accuracy against a floating-point model.
+to compare it against the floating-point model.
 
 Comparision with high-power input signal:
 
@@ -100,10 +101,12 @@ Simplest way of cooling the Lime is to attach it to a piece of metal by using a 
 # Sources
 
 Gateware sources:
+
 https://github.com/gasparka/LimeSDR-Mini_GW/tree/fpga_fft
 
 There is also a fork of LimeSuite that enables oversampling and has various hacks
 related to the custom FPGA image:
+
 https://github.com/gasparka/LimeSuite/tree/fpga_fft
 
 
