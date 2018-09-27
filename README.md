@@ -1,6 +1,6 @@
 
 
-Spectrogram accelerator for the LimeSDR-mini:
+Spectrogram accelerator for LimeSDR-mini:
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/diagram.bmp "Diagram")
 
 Average-pooling reduces the noise of the spectrogram 
@@ -17,15 +17,15 @@ Install Docker:
 
 For the first time, flash the FPGA:
 
-`docker run -it --privileged soapy_fft LimeUtil --fpga=LimeSDR-Mini_GW/LimeSDR-Mini_bitstreams/LimeSDR-Mini_lms7_trx_HW_1.2_auto.rpd`
+`docker run -it --privileged gasparka/spectrogram_driver:arm LimeUtil --fpga=LimeSDR-Mini_GW/LimeSDR-Mini_bitstreams/LimeSDR-Mini_lms7_trx_HW_1.2_auto.rpd`
 
 You can always restore the default image by running:
 
-`docker run -it --privileged --net=host soapy_fft LimeUtil --update`
+`docker run -it --privileged --net=host gasparka/spectrogram_driver:arm LimeUtil --update`
 
 Start the SoapySDR-Remote server (serves FFTs instead of IQ):
 
-`docker run -it --privileged --net=host gasparka/soapy_fft_arm`
+`docker run -it --privileged --net=host gasparka/gasparka/spectrogram_driver:arm`
 
 Test that the server is discoverable on a client machine:
 
@@ -47,7 +47,8 @@ Found device 0
   serial = 1D40EC49F23932
 ```
 
-See the NOTEBOOK on how to get the FFT frames from the server and plot them.
+See the `Demo Notebook <https://github.com/gasparka/realtime_spectrogram/blob/master/driver/usage_demo.ipynb>`_
+ on how to access the server and plot the spectrogram.
 
 Tested on:
 * ODROID-XU4
@@ -65,14 +66,6 @@ Run with:
 `docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" gasparka/spectrogram_gui`
 
 There is also an ARM build `gasparka/spectrogram_gui:arm`, but it is quite slow.
-
-# Cooling the LimeSDR-mini
-
-
-Simplest way of cooling your Lime is to attach it to a piece of metal by using a 'thermal pad':
-
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9411.JPG)
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9408.JPG)
 
 # Accuracy vs floating-point model
 
@@ -94,9 +87,17 @@ Here is a comparision with low-power input signal:
 
 Result is decent, taking into account that the input has only 2-3 bits of useful information.
 
+# Cooling the LimeSDR-mini
+
+Simplest way of cooling your Lime is to attach it to a piece of metal by using a 'thermal pad':
+
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9411.JPG)
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9408.JPG)
+
+
 # Sources
 
-Gateware sources can be found here:
+Gateware sources:
 https://github.com/gasparka/LimeSDR-Mini_GW/tree/fpga_fft
 
 There is also a fork of LimeSuite that enables oversampling and has various hacks
