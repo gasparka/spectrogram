@@ -1,5 +1,3 @@
-
-
 Spectrogram accelerator for LimeSDR-mini:
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/diagram.bmp "Diagram")
 
@@ -60,7 +58,11 @@ Tested on:
 
 This is a Python GUI that plots the FFT frames from the remote diver in real-time. Example of turning on WiFy on a handset:
 
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wify.gif "Wify")
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wifi.gif "Wifi")
+
+Or turning on Bluetooth:
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/Bluetooth.gif "Bluetooth")
+
 
 Run (add ':arm' to run on ARM devices-slow!):
 `docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" gasparka/spectrogram_gui`
@@ -86,9 +88,6 @@ Comparision with low-power input signal:
 
 Result is decent, taking into account that the input has only 2-3 bits of useful information. 
 Use SDR gains to make it better.
-
-You can run your own simulations using `this notebook <https://github.com/gasparka/pyha/blob/develop/pyha/applications/spectrogram_limesdr/spectrogram_limesdr.ipynb>`_
-It shows MODEL vs HARDWARE comparision after each module on the dataflow path.
 
 # Cooling the LimeSDR-mini
 
