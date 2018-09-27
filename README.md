@@ -21,7 +21,7 @@ You can always restore the default image by running:
 
 `docker run -it --privileged --net=host gasparka/spectrogram_driver:arm LimeUtil --update`
 
-Note that you need to power-cycle the Lime after the FPGA programming, this is a LimeSuite bug [#216](https://github.com/myriadrf/LimeSuite/issues/216)
+Note that you need to power-cycle the Lime after the FPGA programming, this is a LimeSuite bug [#216](https://github.com/myriadrf/LimeSuite/issues/216).
 
 Next, start the SoapySDR-Remote server:
 
@@ -56,7 +56,7 @@ Tested on:
 
 # Realtime GUI
 
-This is a Python GUI that plots the FFT frames from the remote diver in real-time. Example of turning on WiFy on a handset:
+This is a Python GUI that plots the FFT frames from the remote diver in real-time. Example of turning on WiFi on a handset:
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wifi.gif "Wifi")
 
@@ -73,8 +73,8 @@ Tip: Use 'Space' to pause the stream.
 # Accuracy vs floating-point model
 
 
-Accelerator is implemented in 18-bit fixed-point format, thus it might be interesting
-to compare it against the floating-point model.
+Accelerator is implemented mostly in 18-bit fixed-point format, thus it might be interesting
+to compare the accuracy against 64-bit floating-point model.
 
 Comparision with high-power input signal:
 
