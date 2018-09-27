@@ -30,7 +30,6 @@ class SpectrogramWidget(pg.PlotWidget):
         self.img.setLookupTable(lut)
         self.img.setLevels([0, 1])
 
-
         # set x-axis labels
         xax = self.getAxis('bottom')
         tick_i = range(0, SCREEN_FFTS, SCREEN_FFTS//16)
@@ -61,11 +60,11 @@ class SpectrogramWidget(pg.PlotWidget):
 
     def main(self):
         i = 0
-        l = []
+        tmp = []
 
         while FFTReader.output_queue.qsize() != 0:
             fft = FFTReader.output_queue.get()
-            l.append(fft)
+            tmp.append(fft)
             i += 1
             if i >= SCREEN_FFTS_PACKETS:
                 # have already loaded full screen...
@@ -75,7 +74,7 @@ class SpectrogramWidget(pg.PlotWidget):
                 break
         if i and self.plot_enabled:
             print(i)
-            self.img_array = np.vstack([self.img_array[PACKET_SIZE*i:]] + l)
+            self.img_array = np.vstack([self.img_array[PACKET_SIZE*i:]] + tmp)
             self.img.setImage(self.img_array, autoLevels=False)
 
 

@@ -4,30 +4,30 @@ Spectrogram accelerator for the LimeSDR-mini:
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/diagram.bmp "Diagram")
 
 Average-pooling reduces the noise of the spectrogram 
-and downsamples the output-rate to 2.5MB/s, which makes it possible to deploy to remote location by using
-some ARM board and SoapySRD Remote integration. This repository provides an Docker image to 
-run this setup super easily!
+and downsamples the datarate to 2.5MB/s, which allows remote deployment by using ARM board and SoapySDR-Remote. 
+This repository provides necessary docker images.
 
-This repository contains 2 applications. First the driver with an SoapySDR integraton and a realtime GUI.
+NOTE: Your LimeSDR-Mini needs to have a cooling solution, see below for an example.
 
-# 1. Remote driver - Running the remote driver on ARM devices
-Pair your LimeSDR-Mini with a cheap ARM board to turn it into a remote FFT server.
+# Running the driver on ARM devices
 
 Install Docker:
 
 `curl -fsSL https://get.docker.com | sh`
 
-For the first time, you need to write the FPGA image to the flash:
-`docker run -it --privileged --net=host soapy_fft LimeUtil --fpga=LimeSDR-Mini_GW/LimeSDR-Mini_bitstreams/LimeSDR-Mini_lms7_trx_HW_1.2_auto.rpd`
+For the first time, flash the FPGA:
 
-You can always restore the default image with running:
+`docker run -it --privileged soapy_fft LimeUtil --fpga=LimeSDR-Mini_GW/LimeSDR-Mini_bitstreams/LimeSDR-Mini_lms7_trx_HW_1.2_auto.rpd`
+
+You can always restore the default image by running:
+
 `docker run -it --privileged --net=host soapy_fft LimeUtil --update`
 
-Setup the device as an SoapySDR-Remote server:
+Start the SoapySDR-Remote server (serves FFTs instead of IQ):
 
-`sudo docker run -it --privileged --net=host gasparka/soapy_fft_arm`
+`docker run -it --privileged --net=host gasparka/soapy_fft_arm`
 
-Test that the server works by running on client machine:
+Test that the server is discoverable on a client machine:
 
 ```
 ~> SoapySDRUtil --find="driver=remote"
@@ -51,44 +51,57 @@ See the NOTEBOOK on how to get the FFT frames from the server and plot them.
 
 Tested on:
 * ODROID-XU4
-* Rasberry Pi 3
+* Raspberry Pi 3
 
-# 2. Realtime GUI
-This is a Python GUI that plots the FFT frames from the remote diver in real-time.
+# Realtime GUI
+
+This is a Python GUI that plots the FFT frames from the remote diver in real-time, use 'Space' 
+to pause the stream.
 
 Turning on WiFi on my mobile:
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wify.gif "Wify")
 
-Idea is to put most screen space for time_axsis, so you can see even short time events. For
-example the Bluetooth transmissions:
-
-To use it you must have a Remote Driver working somewhere and then easiest is to
-use the dockerized version like this:
-
+Run with:
 `docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" gasparka/spectrogram_gui`
 
-This GUI is also built for ARM targets, specify the 'gasparka/spectrogram_gui:arm' tag to try it out.
+There is also an ARM build `gasparka/spectrogram_gui:arm`, but it is quite slow.
 
-Heatsinking the LimeSDR-mini
-----------------------------
+# Cooling the LimeSDR-mini
 
-Simple way of heatsinking your Lime by using the 'thermal pad' and a piece of metal.
+
+Simplest way of cooling your Lime is to attach it to a piece of metal by using a 'thermal pad':
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9411.JPG)
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9408.JPG)
 
-Accuracy compared to model
---------------------------
+# Accuracy vs floating-point model
 
-FPGA accelerator is implemented in mostly 18-bit fixedpoint format, thus it might be interesting to compare it
-againts the floating point model.
 
-Here is a comparision plot on high-power input signal:
+Accelerator is implemented in 18-bit fixed-point format, thus it might be interesting
+to compare the accuracy against a floating-point model.
 
-In general the result is good, execpt for one of the 'phantom' peaks, which is due to the 9-bit twiddle
-factors used in the FFT core.
 
-Here is a plot for a very low power signal:
+Here is a comparision with high-power input signal:
 
-Here we can see that the 8192 point FFT is a bit too much for the 18-bit format, but good enough for visuals.
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_high.png)
+
+In general the result is good, except for the one 'phantom' peak, which is due to the 9-bit twiddle
+factors used in the FFT core. Note that this only happens when you have a very high power concentrated into one FFT bin.
+
+Here is a comparision with low-power input signal:
+
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_low.png)
+
+Result is decent, taking into account that the input has only 2-3 bits of useful information.
+
+# Sources
+
+Gateware sources can be found here:
+https://github.com/gasparka/LimeSDR-Mini_GW/tree/fpga_fft
+
+There is also a fork of LimeSuite that enables oversampling and has various hacks
+related to the custom FPGA image:
+https://github.com/gasparka/LimeSuite/tree/fpga_fft
+
+
 
