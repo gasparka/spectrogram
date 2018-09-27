@@ -1,32 +1,15 @@
 
 
-Spectrogram accelerator for LimeSDR-mini. Average-pooling reduces the noise of the spectrogram 
-and downsamples the output datarate. Potentially usable on ARM devices.
+Spectrogram accelerator for the LimeSDR-mini:
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/diagram.bmp "Diagram")
 
-Turning on WiFi on my mobile:
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wify.gif "Wify")
+Average-pooling reduces the noise of the spectrogram 
+and downsamples the output-rate to 2.5MB/s, which makes it possible to deploy to remote location by using
+some ARM board and SoapySRD Remote integration. This repository provides an Docker image to 
+run this setup super easily!
 
-You will need a heat-sink on your LimeSDR-mini to run this!
+This repository contains 2 applications. First the driver with an SoapySDR integraton and a realtime GUI.
 
-1. Program the FPGA:
-
-This repository is divided into two parts.
-
-    ```bash
-    docker run -it --privileged gasparka/realtime_spectrogram python3 main.py --fpga_init
-    ```
-    Note: You need to unplug and replug your LimeSDR-Mini!
-    
-2. Run the application:
-    ```bash
-    docker run -it --privileged --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" gasparka/realtime_spectrogram python3 main.py --run
-    ```
-    
-3. Once you are done, restore the FPGA:
-    ```bash
-    docker run -it --privileged gasparka/realtime_spectrogram python3 main.py --fpga_restore
-    ```
 # 1. Remote driver - Running the remote driver on ARM devices
 Pair your LimeSDR-Mini with a cheap ARM board to turn it into a remote FFT server.
 
@@ -72,7 +55,9 @@ Tested on:
 
 # 2. Realtime GUI
 This is a Python GUI that plots the FFT frames from the remote diver in real-time.
-Here is a demo:
+
+Turning on WiFi on my mobile:
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wify.gif "Wify")
 
 Idea is to put most screen space for time_axsis, so you can see even short time events. For
 example the Bluetooth transmissions:
@@ -80,11 +65,9 @@ example the Bluetooth transmissions:
 To use it you must have a Remote Driver working somewhere and then easiest is to
 use the dockerized version like this:
 
-`docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" spectrogram_gui`
+`docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" gasparka/spectrogram_gui`
 
-
-
-
+This GUI is also built for ARM targets, specify the 'gasparka/spectrogram_gui:arm' tag to try it out.
 
 Heatsinking the LimeSDR-mini
 ----------------------------
@@ -93,3 +76,19 @@ Simple way of heatsinking your Lime by using the 'thermal pad' and a piece of me
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9411.JPG)
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9408.JPG)
+
+Accuracy compared to model
+--------------------------
+
+FPGA accelerator is implemented in mostly 18-bit fixedpoint format, thus it might be interesting to compare it
+againts the floating point model.
+
+Here is a comparision plot on high-power input signal:
+
+In general the result is good, execpt for one of the 'phantom' peaks, which is due to the 9-bit twiddle
+factors used in the FFT core.
+
+Here is a plot for a very low power signal:
+
+Here we can see that the 8192 point FFT is a bit too much for the 18-bit format, but good enough for visuals.
+

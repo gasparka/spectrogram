@@ -1,11 +1,14 @@
 import logging
 import multiprocessing
+from collections import deque
 from ctypes import c_bool
 from multiprocessing import Queue
 import numpy as np
 import SoapySDR
 from SoapySDR import *  # SOAPY_SDR_ constants
 import sys
+
+from gui.util import rescale_intensity
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger('FFTReader')
@@ -31,6 +34,12 @@ class FFTReader(multiprocessing.Process):
         self.fft_size = 512
         self.fixed_gain = 2**-43 # PITFALL ALERT: this needs to change if avgpooling settings or fft size changes!
         self.rx_buff = np.empty(shape=(self.packet_size, self.fft_size), dtype=np.int32)
+
+
+        # rescaling history
+        self.power_low = deque(maxlen=128)
+        self.power_high = deque(maxlen=128)
+
 
     def init_devices(self):
         self.sdr_device = SoapySDR.Device({'driver': 'remote'})
@@ -75,11 +84,24 @@ class FFTReader(multiprocessing.Process):
         ret = np.log10(self.rx_buff.astype(float) * self.fixed_gain) * 10
         return ret
 
+    def rescaling(self, fft_pack):
+        p2, p98 = np.percentile(fft_pack, (1, 99))
+        self.power_low.append(p2)
+        self.power_high.append(p98)
+
+
+        avg_low = np.mean(list(self.power_low))
+        avg_high = np.mean(list(self.power_high))
+
+        ret = rescale_intensity(fft_pack, in_range=(avg_low, avg_high))
+        return ret
+
     def run(self):
         try:
             self.init_devices()
             while self.alive.value:
                 fft_pack = self.get_fft()
+                fft_pack = self.rescaling(fft_pack)
                 FFTReader.output_queue.put(fft_pack)
         except KeyboardInterrupt:
             pass

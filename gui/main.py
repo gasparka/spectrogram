@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger('main')
 
 SCREEN_FFTS = 2000
-SCREEN_FFTS_PACKETS = 200
+SCREEN_FFTS_PACKETS = 60
 PACKET_SIZE = SCREEN_FFTS // SCREEN_FFTS_PACKETS
 
 
@@ -52,10 +52,17 @@ class SpectrogramWidget(pg.PlotWidget):
         self.show()
 
         self.img_array = np.zeros(shape=(SCREEN_FFTS, 512))
+        self.plot_enabled = True
+
+    def keyPressEvent(self, e):
+        from PyQt5.QtCore import Qt
+        if e.key() == Qt.Key_Space:
+            self.plot_enabled = not self.plot_enabled
 
     def main(self):
         i = 0
         l = []
+
         while FFTReader.output_queue.qsize() != 0:
             fft = FFTReader.output_queue.get()
             l.append(fft)
@@ -66,11 +73,10 @@ class SpectrogramWidget(pg.PlotWidget):
                 while FFTReader.output_queue.qsize() != 0:
                     FFTReader.output_queue.get()
                 break
-        self.img_array = np.vstack([self.img_array[PACKET_SIZE*i:]] + l)
-        p2, p98 = np.percentile(self.img_array, (1, 99))
-        ret = rescale_intensity(self.img_array, in_range=(p2, p98))
-
-        self.img.setImage(ret, autoLevels=False)
+        if i and self.plot_enabled:
+            print(i)
+            self.img_array = np.vstack([self.img_array[PACKET_SIZE*i:]] + l)
+            self.img.setImage(self.img_array, autoLevels=False)
 
 
 def init():
