@@ -5,7 +5,8 @@ def shell(path, cmd):
     subprocess.run(cmd, shell=True, cwd=path)
 
 
-no_cache = '--no-cache'
+# no_cache = '--no-cache'
+no_cache = ''
 
 # build the spectrogram driver
 n = 'spectrogram_driver:arm'

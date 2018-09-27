@@ -5,9 +5,9 @@ Spectrogram accelerator for LimeSDR-mini:
 
 Average-pooling reduces the noise of the spectrogram 
 and downsamples the datarate to 2.5MB/s, which allows remote deployment by using ARM board and SoapySDR-Remote. 
-This repository provides necessary docker images.
+This repository provides the necessary docker images.
 
-NOTE: Your LimeSDR-Mini needs to have a cooling solution, see below for an example.
+NOTE: LimeSDR-Mini needs to have a cooling solution, see below for an example.
 
 # Running the driver on ARM devices
 
@@ -15,7 +15,7 @@ Install Docker:
 
 `curl -fsSL https://get.docker.com | sh`
 
-For the first time, flash the FPGA:
+For the first time, flash the FPGA (drop the ':arm' tag to run on non-ARM devices):
 
 `docker run -it --privileged gasparka/spectrogram_driver:arm LimeUtil --fpga=LimeSDR-Mini_GW/LimeSDR-Mini_bitstreams/LimeSDR-Mini_lms7_trx_HW_1.2_auto.rpd`
 
@@ -23,9 +23,11 @@ You can always restore the default image by running:
 
 `docker run -it --privileged --net=host gasparka/spectrogram_driver:arm LimeUtil --update`
 
-Start the SoapySDR-Remote server (serves FFTs instead of IQ):
+Note that you need to power-cycle the Lime after the FPGA programming, this is a LimeSuite bug `#216 <https://github.com/myriadrf/LimeSuite/issues/216>`_ 
 
-`docker run -it --privileged --net=host gasparka/gasparka/spectrogram_driver:arm`
+Next, start the SoapySDR-Remote server:
+
+`docker run -it --privileged --net=host gasparka/spectrogram_driver:arm`
 
 Test that the server is discoverable on a client machine:
 
@@ -48,24 +50,22 @@ Found device 0
 ```
 
 See the `Demo Notebook <https://github.com/gasparka/realtime_spectrogram/blob/master/driver/usage_demo.ipynb>`_
- on how to access the server and plot the spectrogram.
+ on how to access the server, control the SDR and plot the spectrogram.
 
 Tested on:
 * ODROID-XU4
-* Raspberry Pi 3
+* Raspberry Pi 3 (power from USB3 port)
 
 # Realtime GUI
 
-This is a Python GUI that plots the FFT frames from the remote diver in real-time, use 'Space' 
-to pause the stream.
+This is a Python GUI that plots the FFT frames from the remote diver in real-time. Example of turning on WiFy on a handset:
 
-Turning on WiFi on my mobile:
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wify.gif "Wify")
 
-Run with:
+Run (add ':arm' to run on ARM devices-slow!):
 `docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" gasparka/spectrogram_gui`
 
-There is also an ARM build `gasparka/spectrogram_gui:arm`, but it is quite slow.
+Tip: Use 'Space' to pause the stream.
 
 # Accuracy vs floating-point model
 
@@ -73,23 +73,26 @@ There is also an ARM build `gasparka/spectrogram_gui:arm`, but it is quite slow.
 Accelerator is implemented in 18-bit fixed-point format, thus it might be interesting
 to compare the accuracy against a floating-point model.
 
-
-Here is a comparision with high-power input signal:
+Comparision with high-power input signal:
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_high.png)
 
 In general the result is good, except for the one 'phantom' peak, which is due to the 9-bit twiddle
 factors used in the FFT core. Note that this only happens when you have a very high power concentrated into one FFT bin.
 
-Here is a comparision with low-power input signal:
+Comparision with low-power input signal:
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_low.png)
 
-Result is decent, taking into account that the input has only 2-3 bits of useful information.
+Result is decent, taking into account that the input has only 2-3 bits of useful information. 
+Use SDR gains to make it better.
+
+You can run your own simulations using `this notebook <https://github.com/gasparka/pyha/blob/develop/pyha/applications/spectrogram_limesdr/spectrogram_limesdr.ipynb>`_
+It shows MODEL vs HARDWARE comparision after each module on the dataflow path.
 
 # Cooling the LimeSDR-mini
 
-Simplest way of cooling your Lime is to attach it to a piece of metal by using a 'thermal pad':
+Simplest way of cooling the Lime is to attach it to a piece of metal by using a 'thermal pad':
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9411.JPG)
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9408.JPG)
