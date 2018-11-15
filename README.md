@@ -1,4 +1,4 @@
-# 80MHz bandwidth spectrogram accelerator for LimeSDR-Mini
+# Spectrogram (80MHz bandwidth) accelerator for LimeSDR-Mini
 
 Turning on WiFi on a handset:
 
@@ -91,8 +91,8 @@ Low power input signal:
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_low.png)
 
-Accelerator can detect low power input signals. Accuracy to floating-point model
-is degraded, because input has only ~2 bits of useful information - using SDR gains improves the situation.
+Accelerator can detect low power input signals. Accuracy vs floating-point model
+is degraded due to the input having only ~2 bits of useful information - using SDR gains improves the situation.
 
 # Cooling the LimeSDR-mini
 
