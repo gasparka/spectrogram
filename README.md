@@ -84,14 +84,15 @@ High power input signal:
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_high.png)
 
-The 'phantom' peak at -5MHz is due to the 9-bit twiddle
-factors used in the FFT core. This happens only when a very high power is concentrated into one FFT bin.
+The 'phantom' peak at -5MHz is the leakage of the peak at 15MHz. 
+This happens only when a high power is concentrated into one FFT bin and is due to the 9-bit twiddle
+factors used in the FFT core
 
 Low power input signal:
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_low.png)
 
-Accelerator can detect low power input signals. Accuracy vs floating-point model
+Accelerator can detect low power input signals, but the accuracy vs floating-point model
 is degraded due to the input having only ~2 bits of useful information - using SDR gains improves the situation.
 
 # Cooling the LimeSDR-mini
