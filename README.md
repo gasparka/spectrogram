@@ -1,4 +1,4 @@
-# Spectrogram (80MHz bandwidth) accelerator for LimeSDR-Mini
+# Spectrogram (80MHz bandwidth) accelerator for LimeSDR
 
 Turning on WiFi on a handset:
 
