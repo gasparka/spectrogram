@@ -1,11 +1,21 @@
-Spectrogram accelerator for LimeSDR-mini:
+# 80MHz bandwidth spectrogram accelerator for LimeSDR-Mini
+
+Turning on WiFi on a handset:
+
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wifi.gif "Wifi")
+
+Or turning on Bluetooth:
+
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/blue.gif "Bluetooth")
+
+Block diagram:
+
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/diagram.bmp "Diagram")
 
 Average-pooling reduces the noise of the spectrogram 
-and downsamples the datarate to 2.5MB/s, which allows remote deployment by using ARM board and SoapySDR-Remote. 
-This repository provides the necessary docker images.
+and downsamples the USB bandwidth to 2.5MB/s, which allows remote deployment by using SoapySDR-Remote on RaspberryPi3. 
 
-NOTE: LimeSDR-Mini needs to have a cooling solution, see below for an example.
+**NOTE: LimeSDR-Mini needs to have a cooling solution, see below for an example.**
 
 # Running the driver on ARM devices
 
@@ -52,17 +62,11 @@ See the [Demo Notebook](https://github.com/gasparka/realtime_spectrogram/blob/ma
 
 Tested on:
 * ODROID-XU4
-* Raspberry Pi 3 (power from USB3 port)
+* RaspberryPi3 - Pi was powered from a USB3 port, Lime connected to USB2 port of Pi. 
 
 # Realtime GUI
 
-This is a Python GUI that plots the FFT frames from the remote diver in real-time. Example of turning on WiFi on a handset:
-
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wifi.gif "Wifi")
-
-Or turning on Bluetooth:
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/blue.gif "Bluetooth")
-
+Python GUI that plots the FFT frames from the remote diver in real-time. 
 
 Run (add ':arm' to run on ARM devices-slow!):
 
@@ -76,33 +80,36 @@ Tip: Use 'Space' to pause the stream.
 Accelerator is implemented mostly in 18-bit fixed-point format, thus it might be interesting
 to compare the accuracy against 64-bit floating-point model.
 
-Comparision with high-power input signal:
+High power input signal:
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_high.png)
 
-In general the result is good, except for the one 'phantom' peak, which is due to the 9-bit twiddle
-factors used in the FFT core. Note that this only happens when you have a very high power concentrated into one FFT bin.
+The 'phantom' peak at -5MHz is due to the 9-bit twiddle
+factors used in the FFT core. This happens only when a very high power is concentrated into one FFT bin.
 
-Comparision with low-power input signal:
+Low power input signal:
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_low.png)
 
-Result is decent, taking into account that the input has only 2-3 bits of useful information. 
-Use SDR gains to make it better.
+Accelerator can detect low power input signals. Accuracy to floating-point model
+is degraded, because input has only ~2 bits of useful information - using SDR gains improves the situation.
 
 # Cooling the LimeSDR-mini
 
-Simplest way of cooling the Lime is to attach it to a piece of metal by using a 'thermal pad':
+Using a '~2mm thermal pad' and a piece of metal:
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9411.JPG)
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9408.JPG)
+
+Using small heatsinks wont cut it:
+https://discourse.myriadrf.org/t/rpi3-heat-sinks-on-limesdr-mini/3523
 
 
 # Sources
 
 Gateware sources:
 
-https://github.com/gasparka/LimeSDR-Mini_GW/tree/fpga_fft
+https://github.com/gasparka/LimeSDR-Mini_GW/tree/fpga_fft/LimeSDR-Mini_lms7_trx/src/fft
 
 There is also a fork of LimeSuite that enables oversampling and has various hacks
 related to the custom FPGA image:
