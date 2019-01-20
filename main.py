@@ -8,10 +8,8 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('main')
 
 parser = argparse.ArgumentParser(description='Description of your program')
-parser.add_argument('--fpga_program', help='Description for foo argument', action='store_true')
+parser.add_argument('--server_only', help='Description for foo argument', action='store_true')
 parser.add_argument('--fpga_restore', help='Description for foo argument', action='store_true')
-parser.add_argument('--start_server', help='Description for foo argument', action='store_true')
-parser.add_argument('--start_gqrx', help='Description for foo argument', action='store_true')
 args = vars(parser.parse_args())
 
 IMAGE_NAME = f'spectrogram{":arm" if os.uname()[4].startswith("arm") else ""}'
@@ -52,6 +50,7 @@ def docker_start_gqrx():
 
 def docker_start_server_daemon():
     log.info('Starting server daemon...')
+    subprocess.run('docker kill spectrogram_server', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     subprocess.run(
         f'docker run -d --name spectrogram_server --rm --privileged {IMAGE_NAME} SoapySDRServer --bind',
         shell=True,
@@ -116,6 +115,25 @@ if __name__ == '__main__':
     # docker_pull_images()
 
     remote_available, local_available, local_fpga_ok = probe_devices()
+
+    if args['server_only']:
+        if not local_available:
+            log.info('No local device found, cant start the server')
+            exit(707)
+        if not local_fpga_ok:
+            docker_program_fpga()
+        docker_start_server_daemon()
+        log.info('Server is started!')
+        exit(0)
+
+    if args['fpga_restore']:
+        if not local_available:
+            log.info('No local device found, cant restore the FPGA.')
+            exit(707)
+        docker_restore_fpga()
+        exit(0)
+
+    # default behaviour (no args)
     if remote_available:
         docker_start_gqrx()
     elif local_available:
@@ -126,7 +144,7 @@ if __name__ == '__main__':
         try:
             docker_start_gqrx()
         except:
-            pass # yolo
+            pass  # yolo
 
         log.info('Killing local server...')
         subprocess.run('docker kill spectrogram_server', shell=True)
