@@ -1,0 +1,20 @@
+[submodule "LimeSDR-Mini_GW"]
+	path = LimeSDR-Mini_GW
+	url = https://github.com/gasparka/LimeSDR-Mini_GW
+	branch = fpga_fft
+[submodule "LimeSuite"]
+	path = LimeSuite
+	url = https://github.com/gasparka/LimeSuite
+	branch = fpga_fft
+[submodule "gqrx"]
+	path = gqrx
+	url = https://github.com/gasparka/gqrx
+	branch = master
+[submodule "SoapySDR"]
+	path = SoapySDR
+	url = https://github.com/pothosware/SoapySDR
+	branch = master
+[submodule "SoapyRemote"]
+	path = SoapyRemote
+	url = https://github.com/pothosware/SoapyRemote
+	branch = master
