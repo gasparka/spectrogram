@@ -5,12 +5,12 @@ with open('README.md') as readme_file:
 
 setup(
     name='spectrogram',
-    version='0.0.1',
+    version='0.0.2',
     description="Spectrogram (80MHz bandwidth) accelerator for LimeSDR",
     long_description=readme,
     author="Gaspar Karm",
     author_email='gkarm@live.com',
-    url='https://github.com/gasparka/realtime_spectrogram',
+    url='https://github.com/gasparka/spectrogram',
     license="Apache Software License 2.0",
     keywords='spectrogram, fft, limesdr',
     scripts=['bin/spectrogram']
