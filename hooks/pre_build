@@ -1,0 +1,5 @@
+#!/bin/bash
+# Register qemu-*-static for all supported processors except the 
+# current one, but also remove all registered binfmt_misc before
+# https://github.com/davidecavestro/mariadb-docker-armhf/blob/756c3f31a117341896c37976640055fb43d5b004/hooks/post_checkout
+docker run --rm --privileged multiarch/qemu-user-static:register --reset
