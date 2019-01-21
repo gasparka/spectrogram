@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/LimeSDR-Mini_GW" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/LimeSuite" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/SoapyRemote" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/SoapySDR" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/gqrx" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../spectrogram" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../spectrogram/LimeSDR-Mini_GW" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../spectrogram/LimeSuite" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../spectrogram/SoapyRemote" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../spectrogram/SoapySDR" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../spectrogram/gqrx" vcs="Git" />
   </component>
 </project>
