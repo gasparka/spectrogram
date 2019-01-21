@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 import logging
 import os
@@ -7,15 +9,10 @@ import subprocess
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('main')
 
-parser = argparse.ArgumentParser(description='Description of your program')
-parser.add_argument('--server_only', help='Description for foo argument', action='store_true')
-parser.add_argument('--fpga_restore', help='Description for foo argument', action='store_true')
-args = vars(parser.parse_args())
-
-IMAGE_NAME = f'spectrogram{":arm" if os.uname()[4].startswith("arm") else ""}'
+IMAGE_NAME = f'gasparka/spectrogram{":arm" if os.uname()[4].startswith("arm") else ""}'
 
 
-def docker_pull_images():
+def docker_pull():
     log.info('Pulling latest docker image...')
     subprocess.run(f'docker pull {IMAGE_NAME}',
                    shell=True,
@@ -98,10 +95,15 @@ def probe_devices():
     return remote_available, local_available, local_fpga_ok
 
 
-if __name__ == '__main__':
+def main():
+    parser = argparse.ArgumentParser(description='Description of your program')
+    parser.add_argument('--server_only', help='Description for foo argument', action='store_true')
+    parser.add_argument('--fpga_restore', help='Description for foo argument', action='store_true')
+    args = vars(parser.parse_args())
+
     if platform.system() != 'Linux':
         log.error('Sorry, this currently only works on Linux. Data rates are low, so you could try Virtual Machine.')
-        exit(707)
+        return
 
     if not docker_installed():
         log.error('Docker is not installed, cant continue. Fix: \n'
@@ -110,28 +112,28 @@ if __name__ == '__main__':
                   '$ sudo usermod -aG docker $USER \n'
                   'Log out and log back in so that your group membership is re-evaluated.'
                   'Note: Only the server runs in "--privileged" mode.')
-        exit(707)
+        return
 
-    # docker_pull_images()
+    docker_pull()
 
     remote_available, local_available, local_fpga_ok = probe_devices()
 
     if args['server_only']:
         if not local_available:
             log.info('No local device found, cant start the server')
-            exit(707)
+            return
         if not local_fpga_ok:
             docker_program_fpga()
         docker_start_server_daemon()
         log.info('Server is started!')
-        exit(0)
+        return
 
     if args['fpga_restore']:
         if not local_available:
             log.info('No local device found, cant restore the FPGA.')
-            exit(707)
+            return
         docker_restore_fpga()
-        exit(0)
+        return
 
     # default behaviour (no args)
     if remote_available:
@@ -150,3 +152,7 @@ if __name__ == '__main__':
         subprocess.run('docker kill spectrogram_server', shell=True)
 
     log.info('Done!')
+
+
+if __name__ == '__main__':
+    main()
