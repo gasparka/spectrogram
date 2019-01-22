@@ -49,7 +49,7 @@ def docker_start_server_daemon():
     log.info('Starting server daemon...')
     subprocess.run('docker kill spectrogram_server', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     subprocess.run(
-        'docker run -d --name spectrogram_server --rm --privileged {} SoapySDRServer --bind'.format(IMAGE_NAME),
+        'docker run -d --name spectrogram_server --rm --privileged --net=host  {} SoapySDRServer --bind'.format(IMAGE_NAME),
         shell=True,
         check=True)
 
@@ -70,7 +70,7 @@ def docker_restore_fpga():
 
 def probe_devices():
     log.info('Probing for LimeSDR-Mini devices...')
-    res = subprocess.run('docker run -i --privileged {} SoapySDRUtil --probe="driver=remote"'.format(IMAGE_NAME),
+    res = subprocess.run('docker run -i --privileged --net=host {} SoapySDRUtil --probe="driver=remote"'.format(IMAGE_NAME),
                          shell=True,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
@@ -79,7 +79,7 @@ def probe_devices():
     remote_available = 'LimeSDR-Mini' in output and 'gatewareVersion=1.0' in output
 
     # probe for local device
-    res = subprocess.run('docker run -i --privileged {} SoapySDRUtil --probe="driver=lime"'.format(IMAGE_NAME),
+    res = subprocess.run('docker run -i --privileged --net=host {} SoapySDRUtil --probe="driver=lime"'.format(IMAGE_NAME),
                          shell=True,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
