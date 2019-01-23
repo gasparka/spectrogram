@@ -1,10 +1,10 @@
 # Spectrogram (80MHz bandwidth) accelerator for LimeSDR
 
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/demo.gif "Demo")
+![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/demo.gif "Demo")
 
 Block diagram:
 
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/lime_and_diagram.jpg "Diagram")
+![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/lime_and_diagram.jpg "Diagram")
 
 ## Install
 
@@ -57,8 +57,8 @@ In general you lose ~3dB dynamic range. Also, 512 point FFT is much worse at det
 
 Using a '~2mm thermal pad' and a piece of metal:
 
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9411.JPG)
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/IMG_9408.JPG)
+![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/IMG_9411.JPG)
+![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/IMG_9408.JPG)
 
 Using small heatsinks wont cut it:
 https://discourse.myriadrf.org/t/rpi3-heat-sinks-on-limesdr-mini/3523
