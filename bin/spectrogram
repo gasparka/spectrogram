@@ -11,6 +11,10 @@ log = logging.getLogger('main')
 
 IMAGE_NAME = 'gasparka/spectrogram{}'.format(":arm" if os.uname()[4].startswith("arm") else "")
 
+def warn_temperature():
+    log.warning(
+        'You should cool your LimeSDR-Mini, especially the FPGA. It takes 2.5 minutes for FPGA temperature to rise from 30C to 80C, after which you risk damage!')
+
 
 def docker_pull():
     log.info('Pulling latest docker image...')
@@ -39,6 +43,7 @@ def docker_image_running(name):
 
 def docker_start_gqrx():
     log.info('Starting gqrx...')
+    warn_temperature()
     subprocess.run(
         'docker run -i --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --name gqrx --rm {} gqrx'.format(IMAGE_NAME),
         shell=True,
@@ -92,6 +97,7 @@ def probe_devices():
 
 
 def main():
+    warn_temperature()
     parser = argparse.ArgumentParser(description='Description of your program')
     parser.add_argument('--server_only', help='Description for foo argument', action='store_true')
     parser.add_argument('--fpga_restore', help='Description for foo argument', action='store_true')
