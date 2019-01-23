@@ -1,99 +1,56 @@
 # Spectrogram (80MHz bandwidth) accelerator for LimeSDR
 
-Turning on WiFi on a handset:
-
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/wifi.gif "Wifi")
-
-Or turning on Bluetooth:
-
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/blue.gif "Bluetooth")
+![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/demo.gif "Demo")
 
 Block diagram:
 
 ![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/diagram.bmp "Diagram")
 
-Average-pooling reduces the noise of the spectrogram 
-and downsamples the USB bandwidth to 2.5MB/s, which allows remote deployment by using SoapySDR-Remote on RaspberryPi3. 
+# Install
 
-**NOTE: LimeSDR-Mini needs to have a cooling solution, see below for an example.**
+This application comes in a docker image (Linux PC/ARM architectures). 
+Bootstrapping the image is handled by the ``spectrogram`` executable (```pip install spectrogram```).
 
-# Running the driver on ARM devices
+_**Note:** Use pip3 on Rasbian. Also, Rasbian fails to add the executable to PATH, use ```/home/pi/.local/bin/spectrogram```_
 
-Install Docker:
+# Local usage 
 
-`curl -fsSL https://get.docker.com | sh`
+Running the ```spectrogram``` command does the following:
+1. If needed, programs the local LimeSDR-Mini with proper FPGA image ( restore with  ``spectogram --fpga_restore``)
+2. Starts the local 'SoapySDR-Remote' server
+3. Starts GQRX for spectrogram display
 
-For the first time, flash the FPGA (drop the ':arm' tag to run on non-ARM devices):
+_**Warning:** You should cool your LimeSDR-Mini, especially the FPGA. It takes 2.5 minutes for FPGA temperature to rise from 30C to 80C, after which you risk damage!_
 
-`docker run -it --privileged gasparka/spectrogram_driver:arm LimeUtil --fpga=LimeSDR-Mini_GW/LimeSDR-Mini_bitstreams/LimeSDR-Mini_lms7_trx_HW_1.2_auto.rpd`
+_**Note:** Works on RaspberryPi, but currently the GUI needs optimizations ([#8](https://github.com/gasparka/spectrogram/issues/8))._
 
-You can always restore the default image by running:
 
-`docker run -it --privileged --net=host gasparka/spectrogram_driver:arm LimeUtil --update`
+# Remote usage
 
-Note that you need to power-cycle the Lime after the FPGA programming, this is a LimeSuite bug [#216](https://github.com/myriadrf/LimeSuite/issues/216).
+You want to pair your LimeSDR-Mini with RaspberryPi. On the Pi, execute ```spectrogram --server_only```.
+Now, on the monitoring device execute ```spectrogram```. This will start the GQRX, if the Pi is visible to the monitoring device.
 
-Next, start the SoapySDR-Remote server:
+_**Note:** Network bandwidth is around 1 MB/s._
 
-`docker run -it --privileged --net=host gasparka/spectrogram_driver:arm`
+_**Note:** [LimeNet-Micro](https://www.crowdsupply.com/lime-micro/limenet-micro) is ideal for remote applications - it has LimeSDR, RaspberryPi and power-over-ethernet on single board. Work in progress ([#9](https://github.com/gasparka/spectrogram/issues/9))._
 
-Test that the server is discoverable on a client machine:
-
-```
-~> SoapySDRUtil --find="driver=remote"
-######################################################
-## Soapy SDR -- the SDR abstraction library
-######################################################
-
-Found device 0
-  addr = 24607:1027
-  driver = remote
-  label = LimeSDR Mini [USB 3.0] 1D40EC49F23932
-  media = USB 3.0
-  module = FT601
-  name = LimeSDR Mini
-  remote = tcp://192.168.1.136:55132
-  remote:driver = lime
-  serial = 1D40EC49F23932
-```
-
-See the [Demo Notebook](https://github.com/gasparka/realtime_spectrogram/blob/master/driver/usage_demo.ipynb)
- on how to access the server, control the SDR and plot the spectrogram.
-
-Tested on:
-* ODROID-XU4
-* RaspberryPi3 - Pi was powered from a USB3 port, Lime connected to USB2 port of Pi. 
-
-# Realtime GUI
-
-Python GUI that plots the FFT frames from the remote diver in real-time. 
-
-Run (add ':arm' to run on ARM devices-slow!):
-
-`docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" gasparka/spectrogram_gui`
-
-Tip: Use 'Space' to pause the stream.
 
 # Accuracy vs floating-point model
 
+This is a fixed-point accelerator, accuracy against the floating-point model has been verified.
 
-Accelerator is implemented mostly in 18-bit fixed-point format, thus it might be interesting
-to compare the accuracy against 64-bit floating-point model.
 
-High power input signal:
+![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/fix_vs_float.png)
 
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_high.png)
+[Reproduce](https://github.com/gasparka/pyha/blob/develop/pyha/applications/spectrogram_limesdr/spectrogram_limesdr.ipynb)
 
-The 'phantom' peak at -5MHz is the leakage of the peak at 15MHz. 
-This happens only when a high power is concentrated into one FFT bin and is due to the 9-bit twiddle
-factors used in the FFT core
+# How is 512 point FFT comparable to 131k FFT??
+It's about how many samples are averaged. 131k FFT averages 131k samples - same can be achieved with 512 point FFT and averaging 256 results i.e. 512*256 = 131k.
 
-Low power input signal:
+![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/131k_vs_512.png)
+[Reproduce](https://github.com/gasparka/spectrogram/blob/master/doc/131k_vs_512.ipynb)
 
-![alt text](https://github.com/gasparka/realtime_spectrogram/blob/master/doc/vs_low.png)
-
-Accelerator can detect low power input signals, but the accuracy vs floating-point model
-is degraded due to the input having only ~2 bits of useful information - using SDR gains improves the situation.
+In general you lose ~3dB dynamic range. 512 point FFT is much worse at detecting narrow spectral peaks -this could be considered a feature or bug depending on the application.
 
 # Cooling the LimeSDR-mini
 
@@ -104,18 +61,3 @@ Using a '~2mm thermal pad' and a piece of metal:
 
 Using small heatsinks wont cut it:
 https://discourse.myriadrf.org/t/rpi3-heat-sinks-on-limesdr-mini/3523
-
-
-# Sources
-
-Gateware sources:
-
-https://github.com/gasparka/LimeSDR-Mini_GW/tree/fpga_fft/LimeSDR-Mini_lms7_trx/src/fft
-
-There is also a fork of LimeSuite that enables oversampling and has various hacks
-related to the custom FPGA image:
-
-https://github.com/gasparka/LimeSuite/tree/fpga_fft
-
-
-
