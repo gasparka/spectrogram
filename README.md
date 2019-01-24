@@ -40,14 +40,14 @@ _**Note:** [LimeNet-Micro](https://www.crowdsupply.com/lime-micro/limenet-micro)
 This is a fixed-point accelerator, accuracy against the floating-point model has been verified.
 
 
-![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/fix_vs_float.png)
+![fix vs float accuracy](https://github.com/gasparka/spectrogram/blob/master/doc/fix_vs_float.png)
 
 [Reproduce](https://github.com/gasparka/pyha/blob/develop/pyha/applications/spectrogram_limesdr/spectrogram_limesdr.ipynb)
 
 ### How is 512 point FFT comparable to 131k FFT??
 It's about how many samples are averaged. 131k FFT averages 131k samples - same can be achieved with 512 point FFT and averaging 256 results i.e. 512*256 = 131k.
 
-![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/131k_vs_512.png)
+![132k FFT vs 512 + averaging](https://github.com/gasparka/spectrogram/blob/master/doc/131k_vs_512.png)
 [Reproduce](https://github.com/gasparka/spectrogram/blob/master/doc/131k_vs_512.ipynb)
 
 In general you lose ~3dB dynamic range. Also, 512 point FFT is much worse at detecting narrow spectral peaks - this could be considered a feature or a bug, depending on the application.
@@ -56,26 +56,17 @@ In general you lose ~3dB dynamic range. Also, 512 point FFT is much worse at det
 
 #### No cooling
 
-You will risk damaging your board!
+![No cooling](https://github.com/gasparka/spectrogram/blob/master/doc/no_cools.JPG)
+Took 5 minutes to go from cold to critical FPGA temperature. You will risk damaging your board!
 
 
 #### Heat-sink on FPGA
 
+![FPGA sinked](https://github.com/gasparka/spectrogram/blob/master/doc/fpga_cools.JPG)
 Temperature is stable at ~65C after 10 minutes.
 
 
 #### Heat-sink everything
 
-Using a '~2mm thermal pad' and a huge radiator.
-
-
-
-
-
-Using a '~2mm thermal pad' and a piece of metal:
-
-![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/IMG_9411.JPG)
-![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/IMG_9408.JPG)
-
-Using small heatsinks wont cut it:
-https://discourse.myriadrf.org/t/rpi3-heat-sinks-on-limesdr-mini/3523
+![Massive sink](https://github.com/gasparka/spectrogram/blob/master/doc/all_cools.JPG)
+Temperature is stable at ~54C after 20 minutes.
