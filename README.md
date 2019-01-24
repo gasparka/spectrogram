@@ -1,9 +1,9 @@
 # Spectrogram (80MHz bandwidth) with LimeSDR and GQRX
 
-![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/demo.gif "Demo")
+![Bluetooth GIF](https://github.com/gasparka/spectrogram/blob/master/doc/demo.gif "Demo")
 
 
-![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/lime_and_diagram.jpg "Diagram")
+![Block diagram](https://github.com/gasparka/spectrogram/blob/master/doc/lime_and_diagram.jpg "Diagram")
 
 ## Install
 
@@ -52,7 +52,25 @@ It's about how many samples are averaged. 131k FFT averages 131k samples - same 
 
 In general you lose ~3dB dynamic range. Also, 512 point FFT is much worse at detecting narrow spectral peaks - this could be considered a feature or a bug, depending on the application.
 
-### Cooling the LimeSDR-mini
+### Cooling solutions
+
+#### No cooling
+
+You will risk damaging your board!
+
+
+#### Heat-sink on FPGA
+
+Temperature is stable at ~65C after 10 minutes.
+
+
+#### Heat-sink everything
+
+Using a '~2mm thermal pad' and a huge radiator.
+
+
+
+
 
 Using a '~2mm thermal pad' and a piece of metal:
 
