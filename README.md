@@ -1,8 +1,7 @@
-# Spectrogram (80MHz bandwidth) accelerator for LimeSDR
+# Spectrogram (80MHz bandwidth) with LimeSDR and GQRX
 
 ![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/demo.gif "Demo")
 
-Block diagram:
 
 ![alt text](https://github.com/gasparka/spectrogram/blob/master/doc/lime_and_diagram.jpg "Diagram")
 
