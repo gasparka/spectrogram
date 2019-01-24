@@ -21,7 +21,7 @@ Invoking ```spectrogram``` does following:
 
 _**Warning:** You should cool your LimeSDR-Mini, especially the FPGA. It takes 2.5 minutes for FPGA temperature to rise from 30C to 80C, after which you risk damage!_
 
-_**Note:** Works on RaspberryPi, but currently the GUI needs optimizations ([#8](https://github.com/gasparka/spectrogram/issues/8))._
+_**Note:** Works on RaspberryPi!
 
 
 ## Remote usage
@@ -57,16 +57,19 @@ In general you lose ~3dB dynamic range. Also, 512 point FFT is much worse at det
 #### No cooling
 
 ![No cooling](https://github.com/gasparka/spectrogram/blob/master/doc/no_cools.JPG)
+
 Took 5 minutes to go from cold to critical FPGA temperature. You will risk damaging your board!
 
 
 #### Heat-sink on FPGA
 
 ![FPGA sinked](https://github.com/gasparka/spectrogram/blob/master/doc/fpga_cools.JPG)
+
 Temperature is stable at ~65C after 10 minutes.
 
 
 #### Heat-sink everything
 
 ![Massive sink](https://github.com/gasparka/spectrogram/blob/master/doc/all_cools.JPG)
+
 Temperature is stable at ~54C after 20 minutes.
