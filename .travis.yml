@@ -1,21 +1,16 @@
 language: python
 python:
-  - "3.6"
-
+- '3.6'
 install:
-  - echo "No install"
-
-
+- echo "No install"
 script:
-  - echo "No script"
-
-
+- echo "No script"
 deploy:
   provider: pypi
   user: gkarm
   password:
-    secure: Gfr75PCnkpQ2wTs5DOUbxLf9own94hksSmTwn+ugpgv56yYQeD3PoFuc20vCAIR0YZa4SnDG9kIC/1GOabnnRbN+T6MVWezxgtauPl+GXqbZUeKsrmYqL3VoDq2J4/+wowtO3LB4HPenIo9TLXzaEGCBj6HMmbmTGbjYlBXa6ChFc6it0kMeHPgLGtXmrHlgWIyZIVVbhM8a4Nd4RXiMiL+Ea3nNBhD7cPWgAf8MzXN1WCAM7HLsb+I/lft0Ti6uf/hgdZ5Y8oFH/CBXXuBLfjg3TPbn0yT1OHbnrA67cEI7rcKUj2A3SedIJaVeMNBnKgz7U4zjCg7pvxfPWlK/OdPE8xtH1Nux76cnG6VsjSrW761H6jw10EV2Uf7+UU8HnGgZAKriSOU0bNShGW8FpnMmtXFTNLt5BsbqHGqPztuRnwcx9nxwKAjodzGHZ3phIcewMLzRnY8LJyxVYlNKJd2q3hVd1+YFkRjYZVADFyAa7aGP5pKrB5Xf7pI61XLkV/cmAcNGczI/peHnvdC89cGy8tOQoLMkKs9pl1cLj4mNI+61sXoEKTFI8ctyAv0N7goW1urudqjgpEB/Qj9BwsUqPnF4P2kxW7SRvyhCkHPCp8eTs2LpJqgHflYOSJdraBMxko/xonCaz8sXaKCN7E73T9xYy/RU1BfP2gkvLqk=
-  distributions: "sdist"
+    secure: WJNwo9GBtd9Uxe+rXhgJMIu090ZYH/5IhJRzv2dq17w617xaY0uJb4ahwzLgxvXeDiNFTZjimLXQImg7bWUCnc8q2vrBwN5iix+9r+FtO/tz8o5JIzB3gN8PusXDkcAuxNNAKpN/2Q7zAfzLTT1iBXqlL+0iru3deRMlXfFZ65E7t8fio4Zt4z+/A8nFyQYcGhjIyNVZ+vUNk8ZNaoF48hd0jsqEUC5RWOSYmfVgjl4ZrWlUvs543IkfNYrAke3EoI/SxX91XsGiHqzZyGsk2H3zhC3un1Iy3dCjVWWbNsaw5xh3ufbCCsRsByHqpngaSMAAOagPmWf8YvaolwOM+L7bSd7315cOxkQERIXsxTbd9vXuZoY/xWiZMR9oni0ykw3//yP9l5h7GJsjf5VevUtU3kE7UrgqZk+aCrdI+hi0BPMXrrxQ6inz63NpIGMtFHiK9zv5eDBd/hFsVnJS7+Xz3k2X2ikrPkH4jux+2Ri8M2Gh+Ttx8J/9ox5iu95Pc6aF8gS9XaQ87f1HiMFg+YMarTZPwjsgTFVOg8onH2uPH/1F7Yhv76ORZQ/bn32skj0jjjtQB1Wm55w0RVqGywxOt0XHmqZfevgslUYo4AvLFqGx0m+YY3gG0OSNz+poQpKYK1s2roKMzXKLJFxGzJ2AhcJOsW99gBnHlbtPlvs=
+  distributions: sdist
   on:
     branch: master
     tags: true
