@@ -3,8 +3,12 @@ python:
   - "3.6"
 
 install:
+  - echo "No install"
+
 
 script:
+  - echo "No script"
+
 
 deploy:
   provider: pypi
