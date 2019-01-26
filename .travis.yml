@@ -2,6 +2,10 @@ language: python
 python:
   - "3.6"
 
+install:
+
+script:
+
 deploy:
   provider: pypi
   user: gkarm
