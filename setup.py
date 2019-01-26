@@ -5,7 +5,7 @@ with open('README.md') as readme_file:
 
 setup(
     name='spectrogram',
-    version='0.0.9',
+    version='1.0.0',
     python_requires='>3.4',
     description="Spectrogram (80MHz bandwidth) accelerator for LimeSDR",
     long_description=readme,

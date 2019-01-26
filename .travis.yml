@@ -1,0 +1,10 @@
+deploy:
+  provider: pypi
+  user: gkarm
+  password:
+    secure: Gfr75PCnkpQ2wTs5DOUbxLf9own94hksSmTwn+ugpgv56yYQeD3PoFuc20vCAIR0YZa4SnDG9kIC/1GOabnnRbN+T6MVWezxgtauPl+GXqbZUeKsrmYqL3VoDq2J4/+wowtO3LB4HPenIo9TLXzaEGCBj6HMmbmTGbjYlBXa6ChFc6it0kMeHPgLGtXmrHlgWIyZIVVbhM8a4Nd4RXiMiL+Ea3nNBhD7cPWgAf8MzXN1WCAM7HLsb+I/lft0Ti6uf/hgdZ5Y8oFH/CBXXuBLfjg3TPbn0yT1OHbnrA67cEI7rcKUj2A3SedIJaVeMNBnKgz7U4zjCg7pvxfPWlK/OdPE8xtH1Nux76cnG6VsjSrW761H6jw10EV2Uf7+UU8HnGgZAKriSOU0bNShGW8FpnMmtXFTNLt5BsbqHGqPztuRnwcx9nxwKAjodzGHZ3phIcewMLzRnY8LJyxVYlNKJd2q3hVd1+YFkRjYZVADFyAa7aGP5pKrB5Xf7pI61XLkV/cmAcNGczI/peHnvdC89cGy8tOQoLMkKs9pl1cLj4mNI+61sXoEKTFI8ctyAv0N7goW1urudqjgpEB/Qj9BwsUqPnF4P2kxW7SRvyhCkHPCp8eTs2LpJqgHflYOSJdraBMxko/xonCaz8sXaKCN7E73T9xYy/RU1BfP2gkvLqk=
+  distributions: "sdist"
+  on:
+    branch: master
+    tags: true
+    repo: gasparka/spectrogram
