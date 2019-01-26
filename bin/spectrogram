@@ -87,6 +87,8 @@ def probe_devices():
     output = res.stdout.decode()
 
     remote_available = 'LimeSDR-Mini' in output and 'gatewareVersion=1.0' in output
+    if remote_available:
+        return remote_available, False, False
 
     # probe for local device
     res = subprocess.run(
