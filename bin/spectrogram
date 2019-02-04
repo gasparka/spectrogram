@@ -20,9 +20,12 @@ def warn_temperature():
 
 def docker_pull():
     log.info('Pulling latest docker image...')
-    subprocess.run('docker pull {}'.format(IMAGE_NAME),
-                   shell=True,
-                   check=True)
+    try:
+        subprocess.run('docker pull {}'.format(IMAGE_NAME),
+                       shell=True,
+                       check=True)
+    except:  # e.g. when there is no network connection
+        pass
 
 
 def docker_installed():
@@ -122,8 +125,7 @@ def main():
                   '$ curl -fsSL https://get.docker.com | sh \n'
                   '$ sudo groupadd docker \n'
                   '$ sudo usermod -aG docker $USER \n'
-                  'Log out and log back in so that your group membership is re-evaluated.'
-                  'Note: Only the server runs in "--privileged" mode.')
+                  'Log out and log back in so that your group membership is re-evaluated.')
         return
 
     docker_pull()
