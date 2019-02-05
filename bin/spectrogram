@@ -9,7 +9,7 @@ import subprocess
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('main')
 
-__version__ = '1.0.5'
+__version__ = '1.0.6'
 IMAGE_NAME = 'gasparka/spectrogram{}'.format(":arm" if os.uname()[4].startswith("arm") else "")
 
 
