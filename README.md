@@ -1,4 +1,5 @@
 # Spectrogram (80MHz bandwidth) with LimeSDR and GQRX
+[![Build Status](https://travis-ci.org/gasparka/spectrogram.svg?branch=master)](https://travis-ci.org/gasparka/spectrogram)
 
 ![Bluetooth GIF](https://github.com/gasparka/spectrogram/blob/master/doc/demo.gif "Demo")
 
