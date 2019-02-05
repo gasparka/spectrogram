@@ -13,33 +13,26 @@ RUN apt-get update && apt-get install -y build-essential \
                                             libqt5svg5-dev \
                      && rm -rf /var/lib/apt/lists/*
 
-
-WORKDIR /
-COPY ./ ./src/
-
 # INSTALL SOAPY
-WORKDIR /src/SoapySDR/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make install -j8
+COPY ./SoapySDR ./tmp
+RUN mkdir tmp/build && cd tmp/build && cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make install -j8 && rm -rf /tmp
 
 # INSTALL SOAPY-REMOTE
-WORKDIR /src/SoapyRemote/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make install -j8
+COPY ./SoapyRemote ./tmp
+RUN mkdir tmp/build && cd tmp/build && cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make install -j8 && rm -rf /tmp
 
 # INSTALL CUSTOM LIMESUITE
-WORKDIR /src/LimeSuite/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make install -j8
-WORKDIR /src/LimeSuite/udev-rules
-RUN sh install.sh
+COPY ./LimeSuite ./tmp
+RUN cd tmp/build && cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make install -j8 && cd ../udev-rules/ && sh install.sh && rm -rf /tmp
 
 # BUILD GQRX
-WORKDIR /src/gqrx/build
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_CXX_STANDARD_LIBRARIES="-lSoapySDR" .. && make install -j8
+COPY ./gqrx ./tmp
+RUN mkdir tmp/build && cd tmp/build && cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_CXX_STANDARD_LIBRARIES="-lSoapySDR" .. && make install -j8 && rm -rf /tmp
 
 WORKDIR /
 COPY ./LimeSDR-Mini_GW/LimeSDR-Mini_bitstreams/LimeSDR-Mini_lms7_trx_HW_1.2_auto.rpd ./
 COPY ./gqrx/default.conf ./
 COPY ./docker_entrypoint.sh /
-RUN rm -rf /src
 
 EXPOSE 80
 ENTRYPOINT ["/docker_entrypoint.sh"]
