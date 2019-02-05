@@ -25,8 +25,12 @@ Invoking ```spectrogram``` does following:
 
 _**Warning:** You should **cool your LimeSDR-Mini**, especially the FPGA. It takes 2.5 minutes for FPGA temperature to rise from 30C to 80C, after which you risk damage!_
 
-<!--TODO: image-->
-<!--_**Note:** Works on RaspberryPi!_-->
+Works on RaspberryPi:
+
+![Pi setup](https://github.com/gasparka/spectrogram/blob/master/doc/lime_mini_screen.jpg "lime_mini_screen")
+
+_**Notes:** Current draw was around 1.25A@5V. 5' TFT-Display created some noise in the spectrogram, this was fixed by using HDMI display.
+Later allowed much higher resolution, which caps the CPU when the spectrogram is running full-screen._
 
 ### Remote usage
 
