@@ -1,4 +1,4 @@
-# Spectrogram (80MHz bandwidth) with LimeSDR and GQRX
+# 80MHz bandwidth with LimeSDR-Mini and GQRX
 [![Build Status](https://travis-ci.org/gasparka/spectrogram.svg?branch=master)](https://travis-ci.org/gasparka/spectrogram)
 
 ![Bluetooth GIF](https://github.com/gasparka/spectrogram/blob/master/doc/demo.gif "Demo")
@@ -40,7 +40,7 @@ Next, on the monitoring device, execute ```spectrogram``` - this scans for remot
 Network bandwidth will be around 1 MB/s.
 
 
-_**Note:** [LimeNet-Micro](https://www.crowdsupply.com/lime-micro/limenet-micro) is ideal for remote applications - it has LimeSDR, RaspberryPi and power-over-ethernet on single board. Work in progress ([#9](https://github.com/gasparka/spectrogram/issues/9))._
+_**Note:** [LimeNet-Micro](https://www.crowdsupply.com/lime-micro/limenet-micro) is ideal for remote applications - it has LimeSDR-Mini, RaspberryPi and power-over-ethernet on single board. Work in progress ([#9](https://github.com/gasparka/spectrogram/issues/9))._
 
 
 ## MISC
