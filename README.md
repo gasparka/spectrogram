@@ -30,17 +30,14 @@ Works on RaspberryPi:
 
 ![Pi setup](https://github.com/gasparka/spectrogram/blob/master/doc/lime_mini_screen.jpg "lime_mini_screen")
 
-_**Notes:** Current draw was around 1.25A@5V. 5' TFT-Display created some noise in the spectrogram, this was fixed by using HDMI display.
-Later allowed much higher resolution, which caps the CPU when the spectrogram is running full-screen._
+_**Notes:** Current draw was around 1.25A@5V. 5’ TFT-Display created some noise in the spectrogram - this was not a problem with HDMI display.
+OTOH HDMI supports higher resolution, which may cap the CPU if GQRX window is too big (updating the waterfall is expensive)._
 
 ### Remote usage
 
 Pair your LimeSDR-Mini with RaspberryPi and execute ```spectrogram --server_only``` - this sets up a SoapySDR-Remote server.
 Next, on the monitoring device, execute ```spectrogram``` - this scans for remote devices and opens GQRX if one is found.
 Network bandwidth will be around 1 MB/s.
-
-
-_**Note:** [LimeNet-Micro](https://www.crowdsupply.com/lime-micro/limenet-micro) is ideal for remote applications - it has LimeSDR-Mini, RaspberryPi and power-over-ethernet on single board. Work in progress ([#9](https://github.com/gasparka/spectrogram/issues/9))._
 
 
 ## MISC
