@@ -41,6 +41,10 @@ Network bandwidth will be around 1 MB/s.
 
 
 ## MISC
+
+### Using without GQRX
+[See demo notebook](https://github.com/gasparka/spectrogram/blob/master/doc/usage_demo.ipynb)
+
 ### Accuracy vs floating-point model
 
 This is a fixed-point accelerator, accuracy against the floating-point model has been verified.
