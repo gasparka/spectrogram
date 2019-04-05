@@ -109,9 +109,10 @@ def probe_devices():
 
 def main():
     warn_temperature()
-    parser = argparse.ArgumentParser(description='Description of your program')
-    parser.add_argument('--server_only', help='Description for foo argument', action='store_true')
-    parser.add_argument('--fpga_restore', help='Description for foo argument', action='store_true')
+    parser = argparse.ArgumentParser(description='Spectrogram (80MHz bandwidth) accelerator for LimeSDR')
+    parser.add_argument('--server_only', help='Used for remote applications.', action='store_true')
+    parser.add_argument('--fpga_restore', help='Runs `LimeUtil --update`.', action='store_true')
+    parser.add_argument('--force_fpga', help='In case automatic detection fails.', action='store_true')
     args = vars(parser.parse_args())
 
     if platform.system() != 'Linux':
@@ -129,6 +130,9 @@ def main():
     docker_pull()
 
     remote_available, local_available, local_fpga_ok = probe_devices()
+
+    if args['force_fpga']:
+        local_fpga_ok = False
 
     if args['server_only']:
         if not local_available:
