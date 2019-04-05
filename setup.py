@@ -11,6 +11,7 @@ setup(
     long_description=readme,
     author="Gaspar Karm",
     author_email='gkarm@live.com',
+    install_requires=['loguru'],
     url='https://github.com/gasparka/spectrogram',
     license="Apache Software License 2.0",
     keywords='spectrogram, fft, limesdr',

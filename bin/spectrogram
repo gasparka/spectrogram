@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
 
 import argparse
-import logging
+from loguru import logger
 import os
 import platform
 import subprocess
 
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger('main')
 
 __version__ = '1.0.6'
 IMAGE_NAME = 'gasparka/spectrogram{}'.format(":arm" if os.uname()[4].startswith("arm") else "")
 
 
 def warn_temperature():
-    log.warning(
+    logger.warning(
         'Cool your LimeSDR or risk damage!')
 
 
 def docker_pull():
-    log.info('Pulling latest docker image...')
+    logger.info('Pulling latest docker image...')
     try:
         subprocess.run('docker pull {}'.format(IMAGE_NAME),
                        shell=True,
@@ -47,7 +45,7 @@ def docker_image_running(name):
 
 
 def docker_start_gqrx():
-    log.info('Starting gqrx...')
+    logger.info('Starting gqrx...')
     warn_temperature()
     subprocess.run(
         'docker run -i --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --name gqrx --rm {} gqrx'.format(
@@ -57,7 +55,7 @@ def docker_start_gqrx():
 
 
 def docker_start_server_daemon():
-    log.info('Starting server daemon...')
+    logger.info('Starting server daemon...')
     subprocess.run('docker kill spectrogram_server', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     subprocess.run(
         'docker run -d --name spectrogram_server --rm --privileged --net=host  {} SoapySDRServer --bind'.format(
@@ -67,7 +65,7 @@ def docker_start_server_daemon():
 
 
 def docker_program_fpga():
-    log.info('Programming FPGA, takes ~20 sec...')
+    logger.info('Programming FPGA, takes ~20 sec...')
     subprocess.run(
         'docker run -i --privileged {} LimeUtil --fpga=/LimeSDR-Mini_lms7_trx_HW_1.2_auto.rpd'.format(IMAGE_NAME),
         shell=True,
@@ -75,14 +73,14 @@ def docker_program_fpga():
 
 
 def docker_restore_fpga():
-    log.info('Restoring FPGA, takes ~20 sec...')
+    logger.info('Restoring FPGA, takes ~20 sec...')
     subprocess.run('docker run -i --privileged {} LimeUtil --update'.format(IMAGE_NAME),
                    shell=True,
                    check=True)
 
 
 def probe_devices():
-    log.info('Probing for LimeSDR-Mini devices...')
+    logger.info('Probing for LimeSDR-Mini devices...')
     res = subprocess.run(
         'docker run -i --privileged --net=host {} SoapySDRUtil --probe="driver=remote"'.format(IMAGE_NAME),
         shell=True,
@@ -104,7 +102,7 @@ def probe_devices():
 
     local_available = 'LimeSDR-Mini' in output
     local_fpga_ok = 'gatewareVersion=1.0' in output
-    log.info('remote_available={}, local_available={}, local_fpga_ok={}'.format(remote_available, local_available,
+    logger.info('remote_available={}, local_available={}, local_fpga_ok={}'.format(remote_available, local_available,
                                                                                 local_fpga_ok))
     return remote_available, local_available, local_fpga_ok
 
@@ -117,11 +115,11 @@ def main():
     args = vars(parser.parse_args())
 
     if platform.system() != 'Linux':
-        log.error('Sorry, this currently only works on Linux. Data rates are low, so you could try Virtual Machine.')
+        logger.error('Sorry, this currently only works on Linux. Data rates are low, so you could try Virtual Machine.')
         return
 
     if not docker_installed():
-        log.error('Docker is not installed, cant continue. Fix: \n'
+        logger.error('Docker is not installed, cant continue. Fix: \n'
                   '$ curl -fsSL https://get.docker.com | sh \n'
                   '$ sudo groupadd docker \n'
                   '$ sudo usermod -aG docker $USER \n'
@@ -134,17 +132,17 @@ def main():
 
     if args['server_only']:
         if not local_available:
-            log.info('No local device found, cant start the server')
+            logger.info('No local device found, cant start the server')
             return
         if not local_fpga_ok:
             docker_program_fpga()
         docker_start_server_daemon()
-        log.info('Server is started!')
+        logger.info('Server is started!')
         return
 
     if args['fpga_restore']:
         if not local_available:
-            log.info('No local device found, cant restore the FPGA.')
+            logger.info('No local device found, cant restore the FPGA.')
             return
         docker_restore_fpga()
         return
@@ -162,10 +160,10 @@ def main():
         except:
             pass  # yolo
 
-        log.info('Killing local server...')
+        logger.info('Killing local server...')
         subprocess.run('docker kill spectrogram_server', shell=True)
 
-    log.info('Done!')
+    logger.info('Done!')
 
 
 if __name__ == '__main__':
