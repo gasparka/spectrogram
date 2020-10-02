@@ -16,6 +16,7 @@ Install the helper script to bootstrap the Docker images (Linux PC/ARM architect
 ```pip install spectrogram```
 
 _**Rasbian note:** Use ```pip3```. Executable is installed to ```/home/pi/.local/bin/spectrogram```, which is not on PATH by default._
+
 _**Ubuntu 20 note:** Does not work! Use 18 :)_
 
 ## Usage
