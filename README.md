@@ -11,20 +11,20 @@ _**Note:** DC-removal is based on [Linear-phase DC Removal Filter](https://www.d
 
 ## Install
 
-Install the helper script to bootstrap the Docker images (Linux PC/ARM architectures):
+Works on Linux PC distributions (Ubuntu, Manjaro ...) or ARM boards (Rasperry Pi 3/4, Jetson Nano ...).
+Install the helper script to bootstrap the Docker images:
 
-```pip install spectrogram```
+```pip3 install spectrogram```
 
-_**Rasbian note:** Use ```pip3```. Executable is installed to ```/home/pi/.local/bin/spectrogram```, which is not on PATH by default._
+_**Rasbian/Ubuntu note:** Executable is installed to ```~/.local/bin/spectrogram```, which is not on PATH by default. You need to execute it by using full path!_
 
-_**Ubuntu 20 note:** Does not work! Use 18 :)_
 
 ## Usage
 
 Invoking ```spectrogram``` does following:
 1. If needed, programs the LimeSDR-Mini with FPGA accelerator ( restore with ``spectogram --fpga_restore``)
 2. Starts the local 'SoapySDR-Remote' server
-3. Starts GQRX
+3. Starts GQRX - this connects to the SoapySDR server and displays the spectrogram
 
 _**Warning:** You should **cool your LimeSDR-Mini**, especially the FPGA. It takes 2.5 minutes for FPGA temperature to rise from 30C to 80C, after which you risk damage!_
 
