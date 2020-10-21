@@ -47,8 +47,9 @@ def docker_image_running(name):
 def docker_start_gqrx():
     logger.info('Starting gqrx...')
     warn_temperature()
+    subprocess.run('xhost +local:docker', shell=True, check=False)
     subprocess.run(
-        'docker run -i --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --name gqrx --rm {} gqrx'.format(
+        'docker run -i --net=host --privileged --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --name gqrx --rm {} gqrx'.format(
             IMAGE_NAME),
         shell=True,
         check=True)
@@ -167,6 +168,7 @@ def main():
         logger.info('Killing local server...')
         subprocess.run('docker kill spectrogram_server', shell=True)
 
+    subprocess.run('xhost -local:docker', shell=True, check=False)
     logger.info('Done!')
 
 
