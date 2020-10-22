@@ -12,11 +12,25 @@ _**Note:** DC-removal is based on [Linear-phase DC Removal Filter](https://www.d
 ## Install
 
 Works on Linux PC distributions (Ubuntu, Manjaro ...) or ARM boards (Rasperry Pi 3/4, Jetson Nano ...).
-Install the helper script to bootstrap the Docker images:
+First install docker:
+
+```curl -fsSL https://get.docker.com | sh```
+
+You must then add your user to the docker group:
+
+```
+sudo groupadd docker
+sudo usermod -aG docker $USER
+```
+Log out and back in (or restart the computer) so that your group membership is re-evaluated.
+        
+Finally you need to install the 'spectrogram' script:
 
 ```pip3 install spectrogram```
 
-_**Rasbian/Ubuntu note:** Executable is installed to ```~/.local/bin/spectrogram```, which is not on PATH by default. You need to execute it by using full path!_
+_**Ubuntu note:** You may need to first install pip3 with ```sudo apt install python3-pip```._
+
+_**Rasbian/Ubuntu note:** Script is installed to ```~/.local/bin/spectrogram```, which is not on PATH by default. You need to execute it by using full path!_
 
 
 ## Usage
